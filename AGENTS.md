@@ -1,72 +1,168 @@
 # AGENTS.md
 
-This repository is developed by one human maintainer with AI coding assistance.
+This repository uses **GitHub Spec Kit + Codex + test-driven development (TDD)**.
+The human maintainer should not be used as a command runner for mechanical development work.
 
-## Trigger
+## Trigger: 「開始」
 
-When the user says **「開始」**, do not ask what to do next unless blocked by missing external information.
+When the user says **「開始」**, execute the development loop autonomously. Do not ask the maintainer to run ordinary shell commands, tests, downloads, installs, git commands, or local smoke tests that Codex can run itself.
 
-Instead:
+### 0. Synchronize safely
 
-1. Fetch and read the current repository state.
-2. Read, in this order:
-   - `AGENTS.md`
-   - `docs/PROJECT_SPEC.md`
-   - `docs/SOLO_WORKFLOW.md`
-   - `docs/STATUS.md`
-   - `README.md`
-3. Inspect the current code and git history relevant to the next milestone.
-4. Determine the smallest unfinished task from `docs/STATUS.md` that advances the current milestone.
-5. Implement only that task unless a tightly coupled fix is required.
-6. Run the relevant validation/tests locally.
-7. Update documentation when behavior or workflow changes.
-8. Update `docs/STATUS.md` with verified facts only.
-9. Commit the change with a concise conventional commit message.
-10. Push the commit to the configured GitHub remote so the web reviewer can inspect the exact code. If push fails because authentication, permissions, or remote setup is unavailable, stop and report that explicitly; do not claim the task is review-ready.
-11. Finish with a development report containing:
-    - what changed
-    - files changed
-    - commands/tests run and their results
-    - remaining risks or blockers
-    - exact next recommended task
-    - commit SHA
-    - push result and remote branch
+1. Inspect `git status`.
+2. Preserve any existing user work; never discard uncommitted changes.
+3. Fetch the configured remote.
+4. If the working tree is clean, rebase the current branch on its remote tracking branch before starting.
+5. Read the latest repository instructions after synchronization.
 
-## Core product rule
+### 1. Ensure Spec Kit is installed for Codex
 
-The main product path is:
+This project is migrating to GitHub Spec Kit, pinned initially to **v1.0.3**.
 
-`YouTube URL -> local audio acquisition -> local ASR on Apple Silicon -> Traditional Chinese Markdown transcript`
+If `.specify/` and the Codex Spec Kit skills are not present, bootstrap the existing repository yourself:
 
-The app is local-first. Do not reintroduce Colab, remote Gradio tunnels, cloud cookies, hosted download proxies, or paid transcription APIs unless the spec is explicitly changed.
+```bash
+# Prefer uv/uvx. If uv is missing and Homebrew is available, install uv first.
+uvx --from git+https://github.com/github/spec-kit.git@v1.0.3 \
+  specify init --here --force --non-interactive --integration codex --script py
+```
 
-## Development rules
+Do not ask the maintainer to type this command unless Codex genuinely cannot execute local shell commands.
 
-- Optimize for a single-maintainer project: simple code, small diffs, low operational burden.
-- Do not over-engineer abstractions before they are needed.
-- Prefer one clearly testable milestone at a time.
-- Never commit cookies, browser profiles, credentials, downloaded media, private recordings, generated transcripts, or model caches.
-- Treat YouTube/browser cookies as credentials.
-- Do not add telemetry or upload user media anywhere by default.
-- Preserve user privacy: processing should stay local unless explicitly documented otherwise.
-- Do not silently change major product decisions in `docs/PROJECT_SPEC.md`.
-- If a technical assumption is uncertain, verify it with a minimal experiment before building more layers on top.
+After initialization, use the Codex Spec Kit skills installed under `.agents/skills`.
 
-## Branch / commit behavior
+### 2. Use the Spec Kit lifecycle
 
-For normal solo development, work directly on the current development branch if one is already active. If only `main` exists and the requested environment supports branches cleanly, prefer a short-lived branch for a non-trivial milestone; otherwise keep the workflow simple and commit directly.
+For a new or materially changed feature, follow the Spec Kit lifecycle instead of ad-hoc coding:
 
-Use conventional commit prefixes where practical: `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`.
+1. `$speckit-constitution` — only when project principles are missing or intentionally changed.
+2. `$speckit-specify` — WHAT and WHY, with measurable acceptance criteria.
+3. `$speckit-clarify` — when meaningful ambiguity exists.
+4. `$speckit-plan` — HOW, architecture, dependencies, test strategy.
+5. `$speckit-checklist` — quality gates for non-trivial work.
+6. `$speckit-tasks` — small ordered tasks.
+7. `$speckit-analyze` — cross-check spec/plan/tasks before implementation.
+8. `$speckit-implement` — implement tasks using TDD below.
+9. `$speckit-converge` — compare implementation to spec and append/fix remaining tasks.
+10. Repeat implement/converge until converged.
 
-A task is not ready for external review until its commit is visible on the GitHub remote. A local-only commit is incomplete for this workflow.
+For a tiny bug fix, use the smallest appropriate Spec Kit bug/feature path; do not create ceremony that is larger than the change.
 
-## Stop conditions
+## TDD is mandatory for behavior changes
 
-Stop and report instead of guessing when:
+For each behavior-changing task:
 
-- a test requires the maintainer's local browser session or macOS permission that the agent cannot access;
-- YouTube behavior depends on a real local network/session and cannot be reproduced in the agent environment;
-- the next step would expose credentials or private media;
-- a product-level decision is missing from the spec.
+1. **RED** — add or update the smallest automated test that expresses the next acceptance criterion; run it and confirm it fails for the expected reason.
+2. **GREEN** — implement the minimum code needed to make that test pass.
+3. **REFACTOR** — improve structure only if useful, with the suite staying green.
+4. Run the relevant focused tests, then the full automated suite.
 
-When stopped, leave the repository in a clean, documented state and specify the exact command the maintainer should run locally.
+Do not write implementation first and backfill tests afterward unless the task is explicitly investigative/spike work. If a spike is needed, keep it out of the final implementation or convert its learning into tests before shipping.
+
+### Test layers
+
+- **Unit tests:** pure parsing, command construction, formatting, error classification.
+- **Integration tests:** local dependency behavior such as yt-dlp invocation, file creation, ffmpeg discovery, MLX imports.
+- **Local smoke/e2e tests:** real YouTube acquisition and later real MLX transcription on the maintainer's Mac.
+- **CI tests:** deterministic tests that do not require browser credentials, private media, or unstable external YouTube access.
+
+## Agent-first execution policy
+
+Codex must execute mechanical work itself whenever technically possible, including:
+
+- installing project/development dependencies;
+- running unit/integration/full test suites;
+- running local yt-dlp smoke tests;
+- inspecting generated files and logs;
+- running format/lint/static checks;
+- updating specs/plans/tasks/status documentation;
+- committing, rebasing, and pushing changes;
+- checking CI results when available.
+
+### Human gates are exceptional
+
+Ask the maintainer only when an action fundamentally requires human presence or authorization, for example:
+
+- approving a macOS Keychain/privacy dialog;
+- logging into a browser account;
+- granting an OS permission;
+- making a product decision not determined by the spec;
+- handling a secret that must never be exposed to the agent/repository.
+
+When a human gate is necessary, ask for **one minimal action**, not a list of shell commands. After approval, Codex resumes the workflow itself.
+
+## Product constitution principles
+
+Until the formal Spec Kit constitution is generated, these rules are binding:
+
+1. **Local-first:** YouTube acquisition, ASR, post-processing, and transcript generation run locally on Apple Silicon Mac.
+2. **Privacy-first:** never upload media, cookies, browser profiles, transcripts, or credentials by default.
+3. **Spec before implementation:** acceptance criteria precede code for meaningful changes.
+4. **TDD:** behavior changes follow RED → GREEN → REFACTOR.
+5. **Reliability before UI:** validate each pipeline stage before wrapping it in GUI layers.
+6. **Small vertical slices:** implement the smallest independently verifiable behavior.
+7. **No fake verification:** never mark hardware/network/browser-dependent behavior verified unless Codex actually ran it on the local machine or a documented human gate was completed.
+8. **No unnecessary human labor:** the maintainer reviews decisions and exceptional permissions; the agent performs routine engineering operations.
+
+## Git and CI
+
+- Keep commits coherent and reviewable.
+- Use conventional prefixes where practical: `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`.
+- Never commit cookies, browser profiles, credentials, downloaded media, private recordings, generated private transcripts, or model caches.
+- Push completed commits to the configured GitHub remote.
+- A task is not review-ready until its commit is visible remotely.
+- CI must remain green for deterministic tests before declaring a task complete.
+- If remote changed concurrently, fetch/rebase safely instead of asking the maintainer to resolve a routine non-conflicting divergence.
+
+## Current migration instruction
+
+Read `docs/SPECKIT_ADOPTION.md` before the next implementation task. Complete the Spec Kit adoption and convergence of the current v0.1 work before moving to v0.2.
+
+## Development report
+
+Finish each autonomous run with:
+
+```markdown
+# Development Report
+
+## Spec
+- active spec / feature
+- acceptance criteria addressed
+
+## TDD evidence
+- RED: test(s) added and expected failure observed
+- GREEN: implementation and passing focused tests
+- REFACTOR: any cleanup performed
+
+## Changes
+- ...
+
+## Validation
+- focused tests -> PASS/FAIL
+- full test suite -> PASS/FAIL
+- integration/smoke tests -> PASS/FAIL/SKIPPED with reason
+- CI -> PASS/FAIL/PENDING
+
+## Human gate
+- None
+```
+
+If a real human gate exists, replace `None` with exactly one minimal requested action.
+
+Then include:
+
+```markdown
+## Spec Kit convergence
+- CONVERGED / NOT CONVERGED
+- remaining tasks, if any
+
+## Risks / blockers
+- ...
+
+## Git
+- commit SHA and message
+- pushed branch
+
+## Next action
+- exactly one next autonomous task, or `Review requested`
+```
