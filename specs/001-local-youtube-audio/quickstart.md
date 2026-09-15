@@ -51,3 +51,9 @@ python3 -m whispertube.youtube \
 If macOS requests Keychain or browser permission, that is the only human authorization gate. If
 the browser session is unavailable, record the downloader's error and leave the repository free of
 credential material.
+
+## Verified local result
+
+On 2026-09-16, the anonymous smoke test succeeded with `yt-dlp 2026.08.19` and created one `.webm`
+audio file under `temp/audio/`. The downloader warned that no JavaScript runtime was available, but
+the test video downloaded successfully and did not require browser cookies.

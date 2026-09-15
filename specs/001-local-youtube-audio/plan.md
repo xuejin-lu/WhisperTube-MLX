@@ -21,7 +21,7 @@ Keep URL handling and command construction deterministic and independently testa
   the iteration process.
 -->
 
-**Language/Version**: Python 3.9+ (standard library; development target Python 3.11+)
+**Language/Version**: Python 3.10+ (standard library; development target Python 3.11+)
 
 **Primary Dependencies**: `yt-dlp` executable supplied by the local environment; no Python runtime
 dependency for the core module
@@ -37,10 +37,10 @@ dependency for the core module
 **Performance Goals**: Start one acquisition promptly after validation; downloader performance is
 determined by the source and local network, not by an application SLA in v0.1
 
-**Constraints**: Local-first and privacy-first; no playlist batch mode; no cookie export; runtime
-artifacts stay under ignored local paths; unwritable output paths fail before downloader start;
-deterministic tests must not require YouTube, browser credentials, private media, or Apple Silicon
-acceleration
+**Constraints**: Local-first and privacy-first; no playlist batch mode; no cookie export; relative
+runtime artifacts stay under ignored `temp/` or `outputs/` paths; absolute system-temp paths are
+allowed; unwritable output paths fail before downloader start; deterministic tests must not require
+YouTube, browser credentials, private media, or Apple Silicon acceleration
 
 **Scale/Scope**: One requested video per CLI invocation, one local maintainer, one ignored output
 directory; transcription and GUI are later milestones

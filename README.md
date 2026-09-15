@@ -34,3 +34,8 @@ Run the unit tests with:
 ```bash
 python3 -m unittest discover -s tests -v
 ```
+
+Local smoke verification on 2026-09-16 succeeded anonymously with `yt-dlp
+2026.08.19`; the test video produced a `.webm` audio file under `temp/audio/`.
+The run emitted a warning about no JavaScript runtime, but completed without
+requiring browser cookies.

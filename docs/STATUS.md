@@ -16,21 +16,26 @@
 - Single-video URL normalization is implemented for watch URLs, `youtu.be`, Shorts, and playlist-bearing watch URLs.
 - The local CLI builds a `yt-dlp --no-playlist --format bestaudio/best` command and supports `--cookies-from-browser`.
 - Unit tests cover URL normalization and command construction without requiring a live YouTube request.
+- Spec Kit v1.0.3 is bootstrapped with a constitution and the v0.1 feature artifacts under `specs/001-local-youtube-audio/`.
+- The reviewer-owned security checklist has 12/12 requirements-quality items reviewed and checked.
+- Local `yt-dlp 2026.08.19` and `ffmpeg 9.0.1` are callable on the development Mac.
+- Anonymous smoke acquisition of the test video succeeded with `[download] 100%` and created one ignored `.webm` file under `temp/audio/`.
+- No cookie export or repository credential file was created; the browser-cookie fallback was not needed for this successful anonymous run.
 
 ## Not yet verified
 
-- Whether `yt-dlp` is installed and callable on the maintainer's Mac for this project.
-- Whether anonymous local `yt-dlp` can download the current test video.
 - Whether `--cookies-from-browser safari` is needed or works on the maintainer's machine.
 - MLX Whisper has not yet been selected/verified in this repository.
+- Whether a JavaScript runtime is needed for future YouTube videos or formats; the current smoke run emitted a yt-dlp warning but succeeded.
 
 ## Current blocker
 
-No code blocker. Live YouTube download and browser-cookie behavior require verification on the maintainer's actual Mac.
+No v0.1 code blocker. Safari cookie behavior remains unexercised because anonymous access succeeded;
+the current yt-dlp JavaScript-runtime warning is a follow-up risk for future videos or formats.
 
 ## Next task
 
-Run the documented maintainer-local `yt-dlp` command against the test video and record whether anonymous access succeeds or the Safari cookie fallback is required.
+Review the converged v0.1 implementation and decide whether to approve transition to v0.2 MLX transcription.
 
 Do **not** add Whisper or a GUI yet.
 

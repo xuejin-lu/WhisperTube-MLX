@@ -12,7 +12,9 @@ python3 -m whispertube.youtube URL [--output-dir PATH]
 ## Inputs
 
 - `URL` is one supported YouTube watch, `youtu.be`, or Shorts URL.
-- `--output-dir` selects a local runtime directory and defaults to `temp/audio`.
+- `--output-dir` selects a local runtime directory and defaults to `temp/audio`. Repository-relative
+  values must be beneath the ignored `temp/` or `outputs/` directories; absolute system-temp paths
+  are also allowed.
 - `--cookies-from-browser BROWSER` is optional and is intended for an explicit retry after
   anonymous access is blocked. The value is passed to the local downloader; it is never exported.
 - `--yt-dlp EXECUTABLE` overrides the executable name for testing or a non-default installation.
@@ -27,6 +29,8 @@ python3 -m whispertube.youtube URL [--output-dir PATH]
 - The output directory is created when a real download is requested.
 - If the output directory cannot be created or written, the CLI reports an actionable output error
   and does not invoke the downloader.
+- An unsafe repository-relative output directory is rejected during validation and does not invoke
+  the downloader.
 - Downloader stdout and stderr remain visible to the local user.
 
 ## Exit codes

@@ -26,8 +26,8 @@ description: "Task list for local YouTube audio acquisition"
 **Purpose**: Reconcile the pre-Spec-Kit implementation with deterministic test and privacy gates.
 
 - [X] T004 Establish the existing standard-library test entry point in `tests/test_youtube.py`
-- [ ] T005 Add mocked CLI subprocess tests for missing downloader, non-zero acquisition exit, and unwritable output-directory behavior in `tests/test_youtube.py`
-- [ ] T006 Add a test that invalid URLs fail before `subprocess.run` is invoked in `tests/test_youtube.py`
+- [X] T005 Add mocked CLI subprocess tests for missing downloader, non-zero acquisition exit, unwritable output-directory behavior, and unsafe relative output paths in `tests/test_youtube.py`
+- [X] T006 Add tests that invalid URLs and unsafe relative output paths fail before `subprocess.run` is invoked in `tests/test_youtube.py`
 
 **Checkpoint**: Deterministic validation covers both pure parsing and CLI failure boundaries.
 
@@ -43,7 +43,7 @@ URL, then run the anonymous smoke command against the public test video and insp
 ### Tests for User Story 1
 
 - [X] T007 [P] [US1] Cover watch, `youtu.be`, Shorts, and playlist-bearing URLs in `tests/test_youtube.py`
-- [ ] T008 [US1] Add a CLI contract test for `--print-command` and canonical single-video output in `tests/test_youtube.py`
+- [X] T008 [US1] Add a CLI contract test for `--print-command` and canonical single-video output in `tests/test_youtube.py`
 
 ### Implementation for User Story 1
 
@@ -65,12 +65,12 @@ cookie-file option is accepted or generated; run the fallback only if anonymous 
 ### Tests for User Story 2
 
 - [X] T012 [P] [US2] Cover browser-session argument construction in `tests/test_youtube.py`
-- [ ] T013 [US2] Add a privacy contract assertion that browser fallback argv contains no cookie-file export option in `tests/test_youtube.py`
+- [X] T013 [US2] Add a privacy contract assertion that browser fallback argv contains no cookie-file export option in `tests/test_youtube.py`
 
 ### Implementation for User Story 2
 
 - [X] T014 [US2] Add the explicit `--cookies-from-browser` fallback option to `whispertube/youtube.py`
-- [ ] T015 [US2] Record anonymous and browser-session smoke outcomes, including any human authorization gate, in `docs/STATUS.md`
+- [X] T015 [US2] Record anonymous and browser-session smoke outcomes, including any human authorization gate, in `docs/STATUS.md`
 
 **Checkpoint**: User Stories 1 and 2 are independently testable without committing credentials.
 
@@ -86,12 +86,12 @@ deterministic suite; confirm no live network request is needed.
 ### Tests for User Story 3
 
 - [X] T016 [P] [US3] Cover unsupported hosts and invalid video IDs in `tests/test_youtube.py`
-- [ ] T017 [US3] Cover empty, malformed, and missing-video-ID CLI errors in `tests/test_youtube.py`
+- [X] T017 [US3] Cover empty, malformed, and missing-video-ID CLI errors in `tests/test_youtube.py`
 
 ### Implementation for User Story 3
 
 - [X] T018 [US3] Implement validation errors for unsupported URL forms in `whispertube/youtube.py`
-- [ ] T019 [US3] Implement actionable missing-executable handling, unwritable output-directory handling, and downloader exit-code propagation in `whispertube/youtube.py`
+- [X] T019 [US3] Implement actionable missing-executable handling, runtime output-path validation, unwritable output-directory handling, and downloader exit-code propagation in `whispertube/youtube.py`
 
 **Checkpoint**: All three user stories have deterministic acceptance coverage; live-service evidence is tracked separately.
 
@@ -101,9 +101,9 @@ deterministic suite; confirm no live network request is needed.
 
 **Purpose**: Converge documentation, validation evidence, and repository quality gates.
 
-- [ ] T020 [P] Update `README.md` and `specs/001-local-youtube-audio/quickstart.md` with verified local smoke results
-- [ ] T021 Run the full deterministic suite and quickstart validation, then record verified facts in `docs/STATUS.md`
-- [ ] T022 Run `git diff --check` and inspect ignored runtime paths for credentials or downloaded media before commit in the repository root
+- [X] T020 [P] Update `README.md` and `specs/001-local-youtube-audio/quickstart.md` with verified local smoke results
+- [X] T021 Run the full deterministic suite and quickstart validation, then record verified facts in `docs/STATUS.md`
+- [X] T022 Run `git diff --check` and inspect ignored runtime paths for credentials or downloaded media before commit in the repository root
 - [ ] T023 Push the completed migration and verification commit, then check `.github/workflows/test.yml` CI status
 
 ---

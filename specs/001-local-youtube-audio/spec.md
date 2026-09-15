@@ -113,6 +113,9 @@ each is rejected with a clear validation error and no downloader process is star
 - **FR-009**: The system MUST return a non-success result with an actionable output error when the
   configured runtime directory cannot be created or written, and MUST NOT start the downloader in
   that case.
+- **FR-010**: The system MUST restrict repository-relative runtime output to documented ignored
+  directories such as `temp/` or `outputs/`; an unsafe relative output path MUST be rejected before
+  the downloader starts.
 
 ### Key Entities
 
