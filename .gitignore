@@ -152,6 +152,6 @@ outputs/
 *.mov
 *.mkv
 
-# Local model/cache folders
+# Local model/cache folders and v0.2 transcript runtime
 .cache/
 models/

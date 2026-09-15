@@ -1,0 +1,4 @@
+# Local-only v0.2 inference dependencies for macOS Apple Silicon.
+# CI intentionally does not install this file or download model weights.
+mlx-whisper==0.4.3
+OpenCC==1.4.2

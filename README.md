@@ -39,5 +39,32 @@ python3 -m unittest discover -s tests -v
 Local smoke verification on 2026-09-16 succeeded anonymously with `yt-dlp
 2026.08.19`; the test video produced a `.webm` audio file under
 `temp/audio-v0-1-converged/` using yt-dlp audio-only format `251`.
+
+## v0.2: local MLX transcription
+
+Install the Apple Silicon-only local inference dependencies:
+
+```bash
+python3 -m pip install -r requirements-macos.txt
+```
+
+Transcribe one local audio file with the large-v3 quality target (or choose a
+smaller compatible model for a constrained smoke run):
+
+```bash
+python3 -m whispertube.transcription \
+  /path/to/audio.webm \
+  --model mlx-community/whisper-large-v3-mlx \
+  --output-dir temp/transcripts
+```
+
+The command runs MLX Whisper locally, requests Chinese transcription, converts
+the returned text to Taiwan Traditional Chinese with OpenCC, and writes one
+UTF-8 Markdown transcript. Model caches, audio, and transcripts remain local
+and ignored by Git. CI uses deterministic fakes and does not download models.
+
+On the development Apple Silicon Mac, a 2026-09-16 smoke run used
+`mlx-community/whisper-tiny` against the existing v0.1 audio artifact and
+completed successfully with recognizable Chinese transcript output.
 The run emitted a warning about no JavaScript runtime, but completed without
 requiring browser cookies.

@@ -21,6 +21,20 @@ v0.1 Local YouTube audio acquisition is closed after reviewer verification of:
 
 The Safari/browser-cookie fallback remains intentionally unexercised because anonymous acquisition succeeded. This is a dormant fallback risk, not a v0.1 blocker.
 
+## v0.2 verification
+
+- v0.2 Spec Kit artifacts are complete under `specs/002-mlx-transcription/`: spec, plan, research,
+  data model, CLI contract, quickstart, checklists, and ordered tasks.
+- The agent reviewer checked all requirements/security checklist items after resolving one absolute
+  output-path wording inconsistency and one missing paragraph-formatting requirement.
+- Local Apple Silicon dependencies installed successfully: `mlx-whisper 0.4.3`, `mlx 0.32.2`, and
+  `OpenCC 1.4.2`.
+- Real local MLX smoke succeeded on `arm64` using `mlx-community/whisper-tiny` against the v0.1
+  audio artifact. It produced one 33 KiB UTF-8 Markdown transcript under
+  `temp/transcripts-v0-2-timed/` in 42.97 seconds, with recognizable Chinese text and no human gate.
+- Deterministic tests use injected backend/converter fakes; no audio or transcript content is sent
+  to a hosted service.
+
 ## Current milestone goal
 
 v0.2 must establish a local Apple Silicon transcription path:
@@ -31,25 +45,8 @@ Do **not** connect the YouTube downloader to transcription yet. End-to-end compo
 
 ## Next autonomous task
 
-Use the Spec Kit lifecycle to create the v0.2 feature specification before implementation.
-
-Codex should autonomously:
-
-1. create a new Spec Kit feature for **Local MLX Transcription**;
-2. research currently viable MLX-compatible Whisper implementations for Apple Silicon rather than assuming an old package/API;
-3. define measurable acceptance criteria for:
-   - local audio input;
-   - Chinese transcription;
-   - Apple Silicon/MLX execution;
-   - preferred `large-v3` quality target where practical;
-   - missing dependency/model/input error handling;
-   - no cloud transcription dependency;
-4. document the selected dependency and rationale in `research.md` / `plan.md`;
-5. generate requirements/security-quality checklists and run the agent reviewer phase;
-6. produce tasks and run `$speckit-analyze`;
-7. only then begin implementation with RED → GREEN → REFACTOR;
-8. run deterministic tests, local integration/smoke validation, CI, and `$speckit-converge`;
-9. push and request review.
+Run final v0.2 Spec Kit convergence and CI verification, push the implementation, and request
+maintainer review. Do not connect the YouTube downloader to transcription until v0.3.
 
 ## Constraints carried forward
 
@@ -65,4 +62,5 @@ Codex should autonomously:
 
 - Safari browser-cookie fallback has not been exercised because it was not needed during v0.1 verification.
 - yt-dlp emitted a missing JavaScript-runtime warning during v0.1 smoke verification, although the tested video downloaded successfully.
-- Exact MLX Whisper package/API has not yet been selected and must be researched in v0.2 rather than assumed.
+- The default large-v3 model remains a quality target; the local smoke used tiny to avoid a multi-GB
+  model download during routine validation.

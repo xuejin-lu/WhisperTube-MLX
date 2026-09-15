@@ -177,6 +177,8 @@ Acceptance criteria:
 - local audio file -> Chinese transcript;
 - selected MLX Whisper dependency and model are documented;
 - basic error messages for missing model/dependency/input;
+- one UTF-8 Markdown transcript with Taiwan Traditional Chinese text grouped
+  into readable paragraphs;
 - no cloud transcription dependency.
 
 ### v0.3 — End-to-end CLI pipeline
