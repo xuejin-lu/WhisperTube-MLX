@@ -148,3 +148,8 @@ deterministic suite; confirm no live network request is needed.
 2. Complete US2 only if anonymous access needs the browser-session fallback.
 3. Complete US3 error coverage and the cross-cutting validation/reporting tasks.
 4. Run convergence before declaring v0.1 complete.
+
+## Phase 7: Convergence Corrections (Post-review)
+
+- [X] T024 [US3] Add RED regression coverage proving repository-relative output traversal such as `temp/../../outside` is rejected before downloader invocation in `tests/test_youtube.py` (FR-010, Constitution II)
+- [X] T025 [US1] Reconcile the audio-only selection contract by enforcing `bestaudio` in the downloader argv and updating its deterministic test and CLI contract documentation (FR-003, SC-002)

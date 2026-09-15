@@ -21,7 +21,7 @@
 
 ## Decision 3: Select best available audio without conversion in v0.1
 
-- **Decision**: Use `bestaudio/best` and preserve the source container extension in the output
+- **Decision**: Use `bestaudio` and preserve the source container extension in the output
   template.
 - **Rationale**: This acquires audio with no additional post-processing dependency. Conversion or
   normalization can be evaluated when the transcription stage defines its input contract.

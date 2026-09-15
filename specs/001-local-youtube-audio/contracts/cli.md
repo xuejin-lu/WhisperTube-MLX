@@ -24,7 +24,7 @@ python3 -m whispertube.youtube URL [--output-dir PATH]
 
 - The URL is validated and normalized before the downloader is started.
 - Playlist parameters are discarded from the canonical URL.
-- The downloader receives `--no-playlist`, `--format bestaudio/best`, and an output template of
+- The downloader receives `--no-playlist`, `--format bestaudio`, and an output template of
   `PATH/%(title)s [%(id)s].%(ext)s`.
 - The output directory is created when a real download is requested.
 - If the output directory cannot be created or written, the CLI reports an actionable output error

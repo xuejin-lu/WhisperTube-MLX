@@ -68,7 +68,7 @@ def build_ytdlp_command(
         yt_dlp,
         "--no-playlist",
         "--format",
-        "bestaudio/best",
+        "bestaudio",
         "--output",
         output_template,
     ]
@@ -80,14 +80,16 @@ def build_ytdlp_command(
 
 def _validate_output_dir(output_dir: str | Path) -> Path:
     path = Path(output_dir)
-    if not path.is_absolute() and (
-        not path.parts or path.parts[0] not in _IGNORED_RUNTIME_ROOTS
-    ):
+    if path.is_absolute():
+        return path
+
+    normalized = Path(os.path.normpath(str(path)))
+    if not normalized.parts or normalized.parts[0] not in _IGNORED_RUNTIME_ROOTS:
         raise ValueError(
             "relative output directory must be under temp/ or outputs/; "
             "use an absolute system-temp path for other local locations"
         )
-    return path
+    return normalized
 
 
 def _prepare_output_dir(output_dir: str | Path) -> Path:

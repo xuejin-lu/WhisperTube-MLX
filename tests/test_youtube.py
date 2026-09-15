@@ -44,7 +44,7 @@ class BuildYTDLPCommandTests(unittest.TestCase):
                 "yt-dlp",
                 "--no-playlist",
                 "--format",
-                "bestaudio/best",
+                "bestaudio",
                 "--output",
                 "temp/audio/%(title)s [%(id)s].%(ext)s",
                 CANONICAL_URL,
@@ -140,6 +140,24 @@ class CLITests(unittest.TestCase):
             with self.assertRaises(SystemExit) as raised:
                 with contextlib.redirect_stderr(error):
                     main([CANONICAL_URL, "--output-dir", "downloads/audio"])
+
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("temp/", error.getvalue())
+        run.assert_not_called()
+
+    def test_relative_output_path_traversal_fails_before_downloader(self) -> None:
+        error = io.StringIO()
+        with patch("whispertube.youtube.subprocess.run") as run:
+            with self.assertRaises(SystemExit) as raised:
+                with contextlib.redirect_stderr(error):
+                    main(
+                        [
+                            CANONICAL_URL,
+                            "--output-dir",
+                            "temp/../../outside",
+                            "--print-command",
+                        ]
+                    )
 
         self.assertEqual(raised.exception.code, 2)
         self.assertIn("temp/", error.getvalue())
