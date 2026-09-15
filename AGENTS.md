@@ -22,13 +22,15 @@ Instead:
 7. Update documentation when behavior or workflow changes.
 8. Update `docs/STATUS.md` with verified facts only.
 9. Commit the change with a concise conventional commit message.
-10. Finish with a development report containing:
+10. Push the commit to the configured GitHub remote so the web reviewer can inspect the exact code. If push fails because authentication, permissions, or remote setup is unavailable, stop and report that explicitly; do not claim the task is review-ready.
+11. Finish with a development report containing:
     - what changed
     - files changed
     - commands/tests run and their results
     - remaining risks or blockers
     - exact next recommended task
     - commit SHA
+    - push result and remote branch
 
 ## Core product rule
 
@@ -55,6 +57,8 @@ The app is local-first. Do not reintroduce Colab, remote Gradio tunnels, cloud c
 For normal solo development, work directly on the current development branch if one is already active. If only `main` exists and the requested environment supports branches cleanly, prefer a short-lived branch for a non-trivial milestone; otherwise keep the workflow simple and commit directly.
 
 Use conventional commit prefixes where practical: `feat:`, `fix:`, `test:`, `docs:`, `chore:`, `refactor:`.
+
+A task is not ready for external review until its commit is visible on the GitHub remote. A local-only commit is incomplete for this workflow.
 
 ## Stop conditions
 
