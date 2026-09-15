@@ -92,7 +92,7 @@ correct metadata, UTF-8 text, local conversion, and no hosted call.
 - [X] T020 Run focused transcription tests, the full deterministic suite, `compileall`, and `git diff --check` from the repository root
 - [X] T021 Inspect ignored runtime/model paths for credentials, media, caches, and generated transcripts before commit in the repository root
 - [X] T022 Run `$speckit-converge` against the v0.2 spec, plan, tasks, constitution, implementation, and tests; append any remaining work to this file
-- [ ] T023 Push the coherent v0.2 commit and verify deterministic GitHub Actions CI is green before requesting review
+- [X] T023 Push the coherent v0.2 commit and verify deterministic GitHub Actions CI is green before requesting review
 
 ## Dependencies and Execution Order
 

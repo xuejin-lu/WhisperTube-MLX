@@ -34,6 +34,8 @@ The Safari/browser-cookie fallback remains intentionally unexercised because ano
   `temp/transcripts-v0-2-timed/` in 42.97 seconds, with recognizable Chinese text and no human gate.
 - Deterministic tests use injected backend/converter fakes; no audio or transcript content is sent
   to a hosted service.
+- The full deterministic suite passes with 30 tests, including the unchanged v0.1 acquisition tests;
+  `compileall` and `git diff --check` also pass.
 
 ## Current milestone goal
 
@@ -45,8 +47,7 @@ Do **not** connect the YouTube downloader to transcription yet. End-to-end compo
 
 ## Next autonomous task
 
-Run final v0.2 Spec Kit convergence and CI verification, push the implementation, and request
-maintainer review. Do not connect the YouTube downloader to transcription until v0.3.
+Request maintainer review for v0.2. Do not connect the YouTube downloader to transcription until v0.3.
 
 ## Constraints carried forward
 
@@ -64,3 +65,4 @@ maintainer review. Do not connect the YouTube downloader to transcription until 
 - yt-dlp emitted a missing JavaScript-runtime warning during v0.1 smoke verification, although the tested video downloaded successfully.
 - The default large-v3 model remains a quality target; the local smoke used tiny to avoid a multi-GB
   model download during routine validation.
+- The workflow's v0.2 run is checked by exact pushed SHA before this milestone is called review-ready.
