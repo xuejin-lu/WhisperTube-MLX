@@ -104,7 +104,7 @@ deterministic suite; confirm no live network request is needed.
 - [X] T020 [P] Update `README.md` and `specs/001-local-youtube-audio/quickstart.md` with verified local smoke results
 - [X] T021 Run the full deterministic suite and quickstart validation, then record verified facts in `docs/STATUS.md`
 - [X] T022 Run `git diff --check` and inspect ignored runtime paths for credentials or downloaded media before commit in the repository root
-- [ ] T023 Push the completed migration and verification commit, then check `.github/workflows/test.yml` CI status
+- [ ] T023 Fix deterministic CI checkout depth for `git diff --check HEAD^`, push the completed migration and verification commit, then check `.github/workflows/test.yml` CI status
 
 ---
 
