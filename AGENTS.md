@@ -42,9 +42,12 @@ For a new or materially changed feature, follow the Spec Kit lifecycle instead o
 5. `$speckit-checklist` — quality gates for non-trivial work.
 6. `$speckit-tasks` — small ordered tasks.
 7. `$speckit-analyze` — cross-check spec/plan/tasks before implementation.
-8. `$speckit-implement` — implement tasks using TDD below.
-9. `$speckit-converge` — compare implementation to spec and append/fix remaining tasks.
-10. Repeat implement/converge until converged.
+8. **Agent reviewer phase** — review and resolve all generated checklist items according to `docs/CHECKLIST_REVIEW_POLICY.md`. Routine unchecked checklist items are not a human approval gate.
+9. `$speckit-implement` — implement tasks using TDD below.
+10. `$speckit-converge` — compare implementation to spec and append/fix remaining tasks.
+11. Repeat implement/converge until converged.
+
+Do not call `$speckit-implement` while generated checklist items remain unchecked unless a real human gate defined in `docs/CHECKLIST_REVIEW_POLICY.md` is unresolved.
 
 For a tiny bug fix, use the smallest appropriate Spec Kit bug/feature path; do not create ceremony that is larger than the change.
 
@@ -75,6 +78,7 @@ Codex must execute mechanical work itself whenever technically possible, includi
 - running local yt-dlp smoke tests;
 - inspecting generated files and logs;
 - running format/lint/static checks;
+- reviewing Spec Kit checklists and fixing source artifacts;
 - updating specs/plans/tasks/status documentation;
 - committing, rebasing, and pushing changes;
 - checking CI results when available.
@@ -87,7 +91,10 @@ Ask the maintainer only when an action fundamentally requires human presence or 
 - logging into a browser account;
 - granting an OS permission;
 - making a product decision not determined by the spec;
-- handling a secret that must never be exposed to the agent/repository.
+- handling a secret that must never be exposed to the agent/repository;
+- explicitly accepting a material security/privacy/legal risk.
+
+Unchecked generated checklist items by themselves are **not** a human gate. Follow `docs/CHECKLIST_REVIEW_POLICY.md` first.
 
 When a human gate is necessary, ask for **one minimal action**, not a list of shell commands. After approval, Codex resumes the workflow itself.
 
@@ -116,7 +123,7 @@ Until the formal Spec Kit constitution is generated, these rules are binding:
 
 ## Current migration instruction
 
-Read `docs/SPECKIT_ADOPTION.md` before the next implementation task. Complete the Spec Kit adoption and convergence of the current v0.1 work before moving to v0.2.
+Read `docs/SPECKIT_ADOPTION.md` and `docs/CHECKLIST_REVIEW_POLICY.md` before the next implementation task. Complete the Spec Kit adoption and convergence of the current v0.1 work before moving to v0.2.
 
 ## Development report
 
@@ -128,6 +135,11 @@ Finish each autonomous run with:
 ## Spec
 - active spec / feature
 - acceptance criteria addressed
+
+## Checklist review
+- checklist files reviewed
+- requirements defects found/fixed
+- unresolved human-gate items, if any
 
 ## TDD evidence
 - RED: test(s) added and expected failure observed
