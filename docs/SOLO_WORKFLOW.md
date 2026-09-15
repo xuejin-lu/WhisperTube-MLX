@@ -1,6 +1,8 @@
 # Solo Development Workflow
 
-This project is intentionally optimized for one maintainer using AI coding agents.
+This project is optimized for one human maintainer using Codex as the primary implementation agent and this repository as the source of truth.
+
+The workflow is **Spec Kit + TDD + CI + agent-first execution**.
 
 ## 1. Roles
 
@@ -8,210 +10,217 @@ This project is intentionally optimized for one maintainer using AI coding agent
 
 The human maintainer:
 
-- decides product direction;
-- runs tests that require the real Mac, browser session, microphone/media, or local network;
-- reviews Codex reports;
-- reports unexpected behavior back to the reviewing assistant.
+- decides product direction when the specification does not already decide it;
+- grants exceptional OS/browser permissions when a human action is truly required;
+- reviews development reports and final product behavior;
+- does **not** act as the routine shell-command runner.
 
 ### Codex
 
-Codex is the implementation agent.
+Codex is the implementation and local verification agent.
 
-When told **「開始」**, Codex should read `AGENTS.md` and the project docs, determine the next smallest unfinished task, implement it, validate it, commit it, and return a concise report.
+When told **「開始」**, Codex should:
+
+1. synchronize the repository safely;
+2. read `AGENTS.md` and Spec Kit artifacts;
+3. identify the current feature and next task;
+4. use the Spec Kit lifecycle;
+5. follow TDD for behavior changes;
+6. run tests/integration/smoke checks itself when technically possible;
+7. update spec/plan/tasks/status artifacts;
+8. commit and push;
+9. check CI;
+10. return a review-ready report.
 
 ### Review assistant
 
 The review assistant:
 
-- reads Codex's development report;
-- can inspect the GitHub repository directly;
-- checks whether the implementation matches the spec;
-- identifies regressions, over-engineering, missing tests, security issues, and incorrect assumptions;
-- updates the spec/status/workflow when product decisions change.
+- inspects the pushed GitHub code directly;
+- checks implementation against the spec and tests;
+- detects regressions, over-engineering, security/privacy issues, and false verification claims;
+- updates workflow/spec guidance when needed.
 
-## 2. One-task loop
-
-Use this loop repeatedly:
+## 2. Normal loop
 
 ```text
 Maintainer says 「開始」 in Codex
         |
         v
-Codex reads repo + STATUS
+Codex syncs repo
         |
         v
-Codex selects smallest useful task
+Spec Kit: specify/plan/tasks/analyze as needed
         |
         v
-Implement + test + commit
+TDD: RED -> GREEN -> REFACTOR
         |
         v
-Codex returns development report
+Codex runs unit + integration + local smoke tests
+        |
+        v
+Spec Kit converge
+        |
+        v
+Commit + push
+        |
+        v
+GitHub Actions CI
+        |
+        v
+Codex returns Development Report
         |
         v
 Maintainer pastes report into review chat
         |
         v
-Review assistant checks repo/code/results
+Review assistant inspects pushed code
         |
         +--> approved -> next 「開始」
         |
-        +--> changes needed -> review assistant writes exact correction task
+        +--> changes needed -> repo guidance/spec updated
 ```
 
-Do not batch many milestones into one coding session.
+The maintainer should not be asked to run routine `git`, `python`, `pytest/unittest`, `yt-dlp`, `ffmpeg`, package install, or smoke-test commands if Codex has shell access.
 
-## 3. Task sizing
+## 3. Spec-driven development
 
-A good Codex task should normally satisfy one of these:
+Use GitHub Spec Kit as the canonical feature workflow.
 
-- one capability;
-- one bug fix;
-- one testable refactor;
-- one documentation/workflow update tightly coupled to a code change.
+For meaningful feature work:
 
-Avoid tasks such as:
+1. constitution/principles
+2. specification (WHAT/WHY + acceptance criteria)
+3. clarification when needed
+4. implementation plan (HOW)
+5. checklist/quality gates for non-trivial changes
+6. ordered tasks
+7. analysis/cross-artifact consistency check
+8. implementation
+9. convergence against the spec
 
-- "build the whole app";
-- "finish v1.0";
-- "add downloader + Whisper + UI + packaging".
+Do not let `docs/STATUS.md` become a substitute for a real feature specification.
 
-Prefer:
+## 4. TDD discipline
 
-- "add URL normalization with tests";
-- "add a downloader wrapper around yt-dlp";
-- "add local Safari cookie fallback";
-- "wire one local audio file into the selected MLX Whisper API".
+For every behavior-changing task:
 
-## 4. Verification levels
+### RED
 
-Use the cheapest verification level that proves the change.
+Write the smallest automated test expressing the next acceptance criterion and confirm it fails for the expected reason.
 
-### Level A — Static/unit verification
+### GREEN
+
+Implement the minimum behavior required to make it pass.
+
+### REFACTOR
+
+Clean structure only when useful while keeping the suite green.
+
+Then run:
+
+- focused tests;
+- full deterministic suite;
+- applicable integration/smoke verification.
+
+Existing pre-TDD code should be reconciled by deriving acceptance tests from the spec before further behavior changes. Do not rewrite working code merely to manufacture historical RED evidence.
+
+## 5. Verification levels
+
+### Automated unit verification
+
+Codex always runs these itself.
 
 Examples:
 
-- URL parsing tests;
+- URL parsing;
 - filename/output formatting;
-- subprocess argument generation;
+- subprocess argument construction;
 - error classification;
 - Markdown formatting.
 
-Codex should run these itself.
+### Local integration verification
 
-### Level B — Dependency/integration verification
+Codex runs these itself on the development Mac when available.
 
 Examples:
 
-- yt-dlp binary discovery;
+- yt-dlp binary discovery and execution;
 - ffmpeg discovery;
-- import selected MLX package;
-- local fixture transcription.
+- real local file creation;
+- MLX import/model loading;
+- fixture transcription.
 
-Codex should run these if its environment supports them.
+### Local smoke/e2e verification
 
-### Level C — Maintainer-local verification
+Codex should also run real local smoke tests itself when shell/network access exists.
 
-Required when behavior depends on:
+Examples:
 
-- the maintainer's Mac hardware;
-- Apple Silicon acceleration;
-- Safari/Chrome cookies;
-- residential IP / YouTube anti-bot behavior;
-- macOS privacy/security permissions.
+- real YouTube audio acquisition over the Mac's current network;
+- end-to-end local transcription;
+- temporary-file cleanup.
 
-Codex must not pretend Level C passed. It should provide the exact command and expected evidence for the maintainer to run.
+### Human authorization gate
 
-## 5. Git workflow
+A human step is justified only if the OS/service requires explicit human presence or credentials, for example:
 
-Keep Git simple.
+- approving Safari/Keychain access;
+- logging into YouTube interactively;
+- granting macOS privacy permission;
+- choosing between unresolved product alternatives.
 
-For each coherent task:
+Ask for one minimal action, then resume autonomous execution.
 
-1. inspect current `git status`;
-2. make the smallest required diff;
-3. run validation;
-4. update `docs/STATUS.md` only with verified facts;
-5. commit once the task is coherent.
+## 6. CI policy
 
-Suggested commit forms:
+GitHub Actions runs deterministic tests on push/pull request.
 
-- `feat: add YouTube URL normalization`
-- `feat: add local yt-dlp downloader`
-- `fix: handle YouTube authentication errors`
-- `test: cover playlist URL normalization`
-- `docs: record local verification result`
+CI should not depend on:
 
-Do not commit generated media or credentials.
+- live YouTube availability;
+- browser cookies;
+- private media;
+- Apple Silicon-specific MLX execution.
 
-## 6. Status discipline
+Those are covered by Codex-local integration/smoke verification.
 
-`docs/STATUS.md` is the project handoff state.
+A pushed task is not complete if deterministic CI is known to be failing.
 
-It should answer:
+## 7. Git policy
 
-- current milestone;
-- what is verified;
-- what is not yet verified;
-- current blocker;
-- exact next task;
-- any maintainer-local command awaiting results.
+Codex owns routine repository mechanics:
 
-Do not turn `STATUS.md` into a diary. Keep only current, decision-relevant state.
+1. inspect working tree;
+2. fetch remote;
+3. safely rebase clean local work when needed;
+4. make the smallest coherent change;
+5. validate;
+6. commit;
+7. push;
+8. check CI.
 
-## 7. Codex development report format
+Do not ask the maintainer to resolve a routine non-conflicting divergence.
 
-Every Codex run should finish with this structure:
+Never commit generated media, browser cookies, credentials, private transcripts, or model caches.
 
-```markdown
-# Development Report
+## 8. Development report
 
-## Result
-<one-sentence outcome>
+The canonical report format is defined in `AGENTS.md` and must include:
 
-## Changes
-- ...
-
-## Files changed
-- `path`: purpose
-
-## Validation
-- `command` -> PASS/FAIL
-
-## Local verification needed
-- None
-
-or
-
-- Run: `...`
-- Expected evidence: `...`
-
-## Risks / blockers
-- ...
-
-## Next recommended task
-<exactly one task>
-
-## Commit
-`<sha> <message>`
-```
-
-The maintainer can paste this report directly into the review chat.
-
-## 8. Review policy
-
-A review should focus on:
-
-1. correctness against `PROJECT_SPEC.md`;
-2. whether tests actually prove the claim;
-3. privacy/security, especially cookies and local media;
-4. unnecessary complexity;
-5. whether the next task is still the smallest sensible step.
-
-Do not refactor working code merely for style during early milestones unless it prevents testing or creates a real maintenance risk.
+- active spec and acceptance criteria addressed;
+- RED/GREEN/REFACTOR evidence;
+- changes;
+- validation and smoke-test evidence;
+- CI status;
+- human gate (normally `None`);
+- Spec Kit convergence status;
+- risks/blockers;
+- pushed commit/branch;
+- exactly one next action or `Review requested`.
 
 ## 9. Release discipline
 
-Do not publish a release merely because code exists.
+Do not publish a release because code merely exists.
 
-A version is release-worthy only after its milestone acceptance criteria are verified on the maintainer's actual Apple Silicon Mac where required.
+A release is justified only after the relevant Spec Kit acceptance criteria are converged, deterministic CI is green, and required local Mac integration/e2e behavior has actually been verified.
