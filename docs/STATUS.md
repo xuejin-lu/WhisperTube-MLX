@@ -13,28 +13,24 @@
 - Git working tree was clean immediately after cloning.
 - The project decision is to run YouTube acquisition locally on the Mac rather than from Colab/datacenter IPs.
 - The repository ignores cookies, local media, temp/output folders, and common model/cache artifacts.
+- Single-video URL normalization is implemented for watch URLs, `youtu.be`, Shorts, and playlist-bearing watch URLs.
+- The local CLI builds a `yt-dlp --no-playlist --format bestaudio/best` command and supports `--cookies-from-browser`.
+- Unit tests cover URL normalization and command construction without requiring a live YouTube request.
 
 ## Not yet verified
 
 - Whether `yt-dlp` is installed and callable on the maintainer's Mac for this project.
-- Whether `ffmpeg` is installed and callable.
 - Whether anonymous local `yt-dlp` can download the current test video.
 - Whether `--cookies-from-browser safari` is needed or works on the maintainer's machine.
-- No application code exists yet for URL normalization or downloading.
 - MLX Whisper has not yet been selected/verified in this repository.
 
 ## Current blocker
 
-No code blocker yet. The next step is a minimal local capability check for YouTube audio acquisition on the maintainer's actual Mac.
+No code blocker. Live YouTube download and browser-cookie behavior require verification on the maintainer's actual Mac.
 
 ## Next task
 
-Implement the smallest v0.1 foundation that can be reviewed without pretending to have access to the maintainer's browser/network:
-
-1. add a small Python module/CLI for single-video URL normalization and yt-dlp command construction;
-2. add unit tests for normal watch URLs, `youtu.be`, Shorts, and watch URLs containing playlist parameters;
-3. keep the actual live YouTube download as maintainer-local verification;
-4. document one exact local command for the maintainer to run against the test video.
+Run the documented maintainer-local `yt-dlp` command against the test video and record whether anonymous access succeeds or the Safari cookie fallback is required.
 
 Do **not** add Whisper or a GUI yet.
 
