@@ -21,7 +21,14 @@
 - Local `yt-dlp 2026.08.19` and `ffmpeg 9.0.1` are callable on the development Mac.
 - Anonymous smoke acquisition of the test video succeeded with `[download] 100%` and created one ignored `.webm` file under `temp/audio/`.
 - No cookie export or repository credential file was created; the browser-cookie fallback was not needed for this successful anonymous run.
-- GitHub Actions deterministic CI passed for commit `6b44aac` (run `35019253040`).
+- GitHub Actions deterministic CI passed for commit `4508b08` (run `35019349622`).
+
+## Review findings
+
+v0.1 is **not yet approved for closure**. Repository review found two spec/implementation gaps that must be converged before moving to v0.2:
+
+1. **Relative output path traversal**: `_validate_output_dir()` currently checks only the first lexical path component. A path such as `temp/../../outside` still begins with `temp` and can escape the ignored runtime root after normalization. This violates FR-010's requirement that repository-relative runtime output remain under documented ignored roots.
+2. **Audio-only format contract mismatch**: FR-003 requires the highest-quality audio-only representation, while the implementation/tests currently use `bestaudio/best`. The `/best` fallback can select a non-audio-only representation. The next convergence pass must either enforce `bestaudio` or explicitly change the specification and acceptance criteria to permit a muxed fallback, with rationale.
 
 ## Not yet verified
 
@@ -31,25 +38,20 @@
 
 ## Current blocker
 
-No v0.1 code blocker. Safari cookie behavior remains unexercised because anonymous access succeeded;
-the current yt-dlp JavaScript-runtime warning is a follow-up risk for future videos or formats.
+The two review findings above block v0.1 approval. They are deterministic and should be resolved autonomously by Codex through Spec Kit convergence and TDD; no maintainer command-running or human authorization is required.
 
 ## Next task
 
-Review the converged v0.1 implementation and decide whether to approve transition to v0.2 MLX transcription.
+Run a v0.1 Spec Kit convergence pass for the two review findings above, then implement the resulting corrective tasks with TDD:
 
-Do **not** add Whisper or a GUI yet.
+- add RED tests proving relative path traversal such as `temp/../../outside` cannot escape ignored runtime roots;
+- fix output-path validation using normalized/resolved containment semantics appropriate for repository-relative paths;
+- reconcile FR-003 with downloader format selection and add/adjust tests for the chosen contract;
+- run the focused and full deterministic suites, local smoke test where behavior changed, CI, and `$speckit-converge`;
+- push the resulting commit(s) and request review again.
+
+Do **not** start v0.2 Whisper work until v0.1 is approved.
 
 ## Test video
 
 `https://www.youtube.com/watch?v=gmj41fQTbfY`
-
-## Maintainer-local verification target
-
-When Codex finishes the next task, it should provide one command that attempts a real local download of the test video's best audio into an ignored temp directory.
-
-Expected success evidence:
-
-- yt-dlp reaches `[download] 100%`;
-- an audio file exists under the ignored local temp directory;
-- no cookie/session file is written into the repository.
