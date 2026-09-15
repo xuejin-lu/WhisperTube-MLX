@@ -21,6 +21,7 @@
 - Local `yt-dlp 2026.08.19` and `ffmpeg 9.0.1` are callable on the development Mac.
 - Anonymous smoke acquisition of the test video succeeded with `[download] 100%` and created one ignored `.webm` file under `temp/audio/`.
 - No cookie export or repository credential file was created; the browser-cookie fallback was not needed for this successful anonymous run.
+- GitHub Actions deterministic CI passed for commit `6b44aac` (run `35019253040`).
 
 ## Not yet verified
 
