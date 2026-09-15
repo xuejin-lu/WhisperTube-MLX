@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-16
 
-**Status**: In Progress
+**Status**: Complete
 
 **Input**: User description: "Reliably acquire audio from one YouTube video locally on an Apple Silicon Mac, including a local browser-cookie fallback when anonymous access is blocked."
 
