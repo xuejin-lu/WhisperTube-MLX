@@ -36,6 +36,15 @@ The Safari/browser-cookie fallback remains intentionally unexercised because ano
   to a hosted service.
 - The full deterministic suite passes with 30 tests, including the unchanged v0.1 acquisition tests;
   `compileall` and `git diff --check` also pass.
+- GitHub Actions run `35032658795` passed for pushed commit `d55aece`.
+
+## Review findings
+
+v0.2 is **not yet approved for closure**. Repository review found three deterministic/spec-alignment gaps:
+
+1. **Paragraphs are hard-sliced, not natural/readable**: `format_paragraphs()` collapses whitespace and slices every 500 code points. This can split a sentence in the middle even though FR-005 and the project-level output requirement call for readable paragraphs targeting roughly 500 Chinese characters. Paragraph formation should prefer sentence/punctuation boundaries and only hard-split when no reasonable boundary exists.
+2. **Backend error classification can mislabel audio/dependency failures as model failures**: `transcribe_audio()` currently maps backend `FileNotFoundError`, `IsADirectoryError`, `KeyError`, and `ValueError` to `ModelError`. MLX Whisper audio decoding depends on local ffmpeg; a missing decoder or malformed/undecodable audio can therefore be reported as "unable to load model". v0.2 requires cause-specific dependency/model/inference handling. Add a deterministic preflight/error boundary so missing ffmpeg is a dependency error and audio decode/inference failures are not mislabeled as model errors.
+3. **OpenCC configuration drift**: the project-level specification names OpenCC `s2tw` (or a documented equivalent) and requires no semantic rewriting, while the implementation selects `s2twp`, which additionally performs Taiwan regional phrase conversion. Unless the feature spec intentionally and explicitly changes this product decision, use `s2tw` for the v0.2 baseline and test the selected configuration.
 
 ## Current milestone goal
 
@@ -45,9 +54,22 @@ v0.2 must establish a local Apple Silicon transcription path:
 
 Do **not** connect the YouTube downloader to transcription yet. End-to-end composition belongs to v0.3.
 
+## Current blocker
+
+The three review findings above block v0.2 approval. They are deterministic and should be resolved autonomously through Spec Kit convergence and TDD; no maintainer shell work or human authorization is required.
+
 ## Next autonomous task
 
-Request maintainer review for v0.2. Do not connect the YouTube downloader to transcription until v0.3.
+Run a v0.2 Spec Kit convergence pass for the three review findings above, then implement the corrective tasks with RED -> GREEN -> REFACTOR:
+
+- add sentence-aware / punctuation-aware paragraph-formatting tests around the ~500-character target while preserving transcript content;
+- replace fixed hard slicing with natural-boundary paragraph grouping, retaining a safe hard-split fallback for pathological long spans;
+- add deterministic error-boundary tests for missing ffmpeg/audio decode failure versus model/inference failure, then fix cause-specific classification;
+- reconcile OpenCC `s2tw` versus `s2twp` with the top-level project spec; absent an explicit product-spec change, use and test `s2tw`;
+- run focused tests, the full deterministic suite, local Apple Silicon smoke validation, CI, and `$speckit-converge`;
+- push and request review again.
+
+Do **not** start v0.3 until v0.2 is approved.
 
 ## Constraints carried forward
 
@@ -63,6 +85,4 @@ Request maintainer review for v0.2. Do not connect the YouTube downloader to tra
 
 - Safari browser-cookie fallback has not been exercised because it was not needed during v0.1 verification.
 - yt-dlp emitted a missing JavaScript-runtime warning during v0.1 smoke verification, although the tested video downloaded successfully.
-- The default large-v3 model remains a quality target; the local smoke used tiny to avoid a multi-GB
-  model download during routine validation.
-- The workflow's v0.2 run is checked by exact pushed SHA before this milestone is called review-ready.
+- The default large-v3 model remains a quality target; the local smoke used tiny to avoid a multi-GB model download during routine validation.
