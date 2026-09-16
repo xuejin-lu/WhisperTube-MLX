@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-**v0.2 — Local MLX transcription**
+**v0.3 — End-to-end CLI pipeline**
 
 ## v0.1 approval
 
@@ -19,68 +19,58 @@ v0.1 Local YouTube audio acquisition is closed after reviewer verification of:
 - no cookie export or credential file was produced;
 - GitHub Actions passed for commit `9c68ccd` in run `35021028881`.
 
-The Safari/browser-cookie fallback remains intentionally unexercised because anonymous acquisition succeeded. This is a dormant fallback risk, not a v0.1 blocker.
+## v0.2 approval
 
-## v0.2 verification
+**APPROVED on 2026-09-16.**
 
-- v0.2 Spec Kit artifacts are complete under `specs/002-mlx-transcription/`: spec, plan, research,
-  data model, CLI contract, quickstart, checklists, and ordered tasks.
-- The agent reviewer checked all requirements/security checklist items after resolving one absolute
-  output-path wording inconsistency and one missing paragraph-formatting requirement.
-- Local Apple Silicon dependencies installed successfully: `mlx-whisper 0.4.3`, `mlx 0.32.2`, and
-  `OpenCC 1.4.2`.
-- Real local MLX smoke succeeded on `arm64` using `mlx-community/whisper-tiny` against the v0.1
-  audio artifact. It produced one 33 KiB UTF-8 Markdown transcript under
-  `temp/transcripts-v0-2-timed/` in 42.97 seconds, with recognizable Chinese text and no human gate.
-- Deterministic tests use injected backend/converter fakes; no audio or transcript content is sent
-  to a hosted service.
-- The full deterministic suite passes with 30 tests, including the unchanged v0.1 acquisition tests;
-  `compileall` and `git diff --check` also pass.
-- GitHub Actions run `35032658795` passed for pushed commit `d55aece`.
+v0.2 Local MLX transcription is closed after reviewer verification of:
 
-## Review findings
+- Spec Kit convergence complete with T001-T030 checked;
+- requirements checklist 8/8 and security checklist 9/9 reviewed;
+- deterministic tests expanded to 21 focused transcription tests and 36 full-repository tests;
+- paragraph formatting now prefers sentence/punctuation boundaries near the ~500-character target and preserves content with a hard-split fallback only for pathological spans;
+- local ffmpeg preflight and backend error mapping distinguish dependency, model, and audio-decode/inference failures;
+- OpenCC adapter and docs use the project baseline `s2tw` configuration;
+- Apple Silicon MLX smoke succeeded with `mlx-community/whisper-tiny` and produced a local ignored Markdown transcript;
+- GitHub Actions passed for commit `9caff16` in run `35047914567`.
 
-The three deterministic/spec-alignment findings from the v0.2 review are resolved:
-
-1. `format_paragraphs()` now prefers sentence and punctuation boundaries near the 500-character
-   target, preserves transcript content, and uses a hard-split fallback for pathological spans.
-2. Real MLX runs perform a local ffmpeg preflight. Backend failures now distinguish ffmpeg/decoder
-   dependency failures, model-loading failures, and audio-decode/inference failures.
-3. The OpenCC adapter, CLI contract, research, plan, and tests consistently use the project baseline
-   `s2tw` configuration.
-
-The focused transcription suite passes 21 tests and the full deterministic suite passes 36 tests.
-The updated implementation also completed a real arm64 `whisper-tiny` smoke run and produced a new
-ignored Markdown transcript under `temp/transcripts-v0-2-review/`.
+The default `mlx-community/whisper-large-v3-mlx` remains the quality target. A full large-v3 smoke was not required to close v0.2 because the milestone acceptance criteria were satisfied with the same MLX path using a smaller explicit model.
 
 ## Current milestone goal
 
-v0.2 must establish a local Apple Silicon transcription path:
+v0.3 composes the two approved stages into one local CLI flow:
 
-`local audio file -> MLX-compatible Whisper -> Chinese transcript`
+`YouTube URL -> local audio -> MLX Whisper -> Taiwan Traditional Chinese -> Markdown`
 
-Do **not** connect the YouTube downloader to transcription yet. End-to-end composition belongs to v0.3.
-
-## Current blocker
-
-None. The deterministic review findings are resolved; v0.2 is ready for maintainer review.
+The composition must reuse the approved v0.1 acquisition and v0.2 transcription boundaries rather than duplicating their logic.
 
 ## Next autonomous task
 
-Request maintainer review for v0.2. Do not connect the YouTube downloader to transcription until v0.3.
+Use the Spec Kit lifecycle to create and implement the v0.3 **End-to-end CLI pipeline** feature.
 
-## Constraints carried forward
+Codex should autonomously:
 
-- Local-first and privacy-first.
-- Apple Silicon Mac is the initial target.
-- Free/open tooling preferred.
-- No hosted transcription API.
-- No GUI yet.
-- No summarization, diarization, or word-level timestamps in v0.2.
-- Do not modify the proven v0.1 acquisition behavior unless a v0.2 integration need exposes a real defect; if so, create a separate convergence/fix task.
+1. create a new Spec Kit feature for the end-to-end pipeline;
+2. specify the one-command CLI contract and acceptance criteria;
+3. define temporary audio lifecycle/cleanup behavior explicitly;
+4. preserve cause-specific error boundaries so download, dependency/model/inference, and output failures remain distinguishable;
+5. reuse `whispertube.youtube` and `whispertube.transcription` rather than reimplementing them;
+6. add deterministic orchestration tests first (RED), using injected/fake stage boundaries so CI requires no YouTube, model download, or Apple Silicon hardware;
+7. implement the minimum composition layer (GREEN), then refactor with existing v0.1/v0.2 suites still green;
+8. run a real local end-to-end smoke on the approved public test video with an explicit small MLX model unless the spec justifies another safe fixture;
+9. verify temporary media cleanup and that no cookie, model cache, downloaded media, or transcript is accidentally versioned;
+10. run the full deterministic suite, CI, `$speckit-converge`, push, and request review.
+
+## v0.3 scope constraints
+
+- No GUI yet; GUI remains v0.4.
+- No summarization, diarization, timestamps, batch playlists, hosted APIs, accounts, database, telemetry, or paid fallback.
+- Keep all processing local except model retrieval from its documented registry when a model is not already cached.
+- Preserve the existing `large-v3` default transcription target while allowing a smaller explicit model for smoke/testing.
+- Do not weaken v0.1/v0.2 security/output-path/error contracts during composition.
 
 ## Known follow-up risks
 
-- Safari browser-cookie fallback has not been exercised because it was not needed during v0.1 verification.
-- yt-dlp emitted a missing JavaScript-runtime warning during v0.1 smoke verification, although the tested video downloaded successfully.
-- The default large-v3 model remains a quality target; the local smoke used tiny to avoid a multi-GB model download during routine validation.
+- Safari browser-cookie fallback remains unexercised because anonymous YouTube acquisition succeeded in v0.1 testing.
+- yt-dlp emitted a missing JavaScript-runtime warning during v0.1 smoke verification, although the approved test video downloaded successfully.
+- full large-v3 runtime cost and memory use remain unmeasured; this is not a v0.3 blocker unless the end-to-end default path reveals a practical failure.
