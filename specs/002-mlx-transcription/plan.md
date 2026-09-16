@@ -42,7 +42,9 @@ wall-clock SLA; the selected model and elapsed time are recorded for review.
 **Constraints**: Local-first/privacy-first; no hosted inference or telemetry; one input and one
 Markdown output; default large-v3 target with explicit smaller-model override; repository-relative
 runtime output remains under ignored roots, with explicit system-temporary paths allowed; no silent
-overwrite; input/output/model failures remain cause-specific; v0.1 downloader is not modified.
+overwrite; ffmpeg/dependency, model, and audio-decode/inference failures remain cause-specific;
+paragraphs prefer natural punctuation boundaries with a safe hard-split fallback; OpenCC uses the
+project baseline `s2tw`; v0.1 downloader is not modified.
 
 **Scale/Scope**: One local maintainer, one audio file per invocation, one transcript artifact; no
 GUI, batch orchestration, summarization, diarization, word timestamps, or YouTube composition.

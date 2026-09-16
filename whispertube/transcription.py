@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -23,6 +24,8 @@ _SUPPORTED_AUDIO_SUFFIXES = {
     ".wav",
     ".webm",
 }
+_STRONG_PARAGRAPH_BOUNDARIES = "。！？!?；;\n"
+_WEAK_PARAGRAPH_BOUNDARIES = "：:，,、"
 
 
 class TranscriptionError(Exception):
@@ -125,7 +128,56 @@ def _load_converter() -> TextConverter:
         from opencc import OpenCC
     except ImportError as exc:
         raise DependencyError("OpenCC is not installed; install requirements-macos.txt") from exc
-    return OpenCC("s2twp").convert
+    return OpenCC("s2tw").convert
+
+
+def _ensure_ffmpeg_available() -> None:
+    if shutil.which("ffmpeg") is None:
+        raise DependencyError("ffmpeg is not available on PATH; install ffmpeg locally")
+
+
+def _is_dependency_error(exc: Exception) -> bool:
+    message = str(exc).lower()
+    return "ffmpeg" in message or "decoder" in message or "avformat" in message
+
+
+def _is_model_error(exc: Exception) -> bool:
+    message = str(exc).lower()
+    model_terms = (
+        "model",
+        "checkpoint",
+        "config",
+        "repository",
+        "repo",
+        "weights",
+        "tokenizer",
+        "huggingface",
+        "safetensors",
+    )
+    return isinstance(exc, (FileNotFoundError, IsADirectoryError, KeyError)) or any(
+        term in message for term in model_terms
+    )
+
+
+def _paragraph_end(text: str, start: int, max_chars: int) -> int:
+    hard_end = min(start + max_chars, len(text))
+    if hard_end == len(text):
+        return hard_end
+
+    search_start = start + max(1, int(max_chars * 0.75))
+    for index in range(hard_end - 1, search_start - 1, -1):
+        if text[index] in _STRONG_PARAGRAPH_BOUNDARIES:
+            return index + 1
+
+    lookahead_end = min(len(text), start + max_chars + max_chars // 4)
+    for index in range(hard_end, lookahead_end):
+        if text[index] in _STRONG_PARAGRAPH_BOUNDARIES:
+            return index + 1
+
+    for index in range(hard_end - 1, search_start - 1, -1):
+        if text[index] in _WEAK_PARAGRAPH_BOUNDARIES:
+            return index + 1
+    return hard_end
 
 
 def format_paragraphs(text: str, *, max_chars: int = 500) -> str:
@@ -134,10 +186,13 @@ def format_paragraphs(text: str, *, max_chars: int = 500) -> str:
     if max_chars < 1:
         raise ValueError("max_chars must be positive")
     normalized = " ".join(text.split())
-    return "\n\n".join(
-        normalized[start : start + max_chars]
-        for start in range(0, len(normalized), max_chars)
-    )
+    paragraphs: list[str] = []
+    start = 0
+    while start < len(normalized):
+        end = _paragraph_end(normalized, start, max_chars)
+        paragraphs.append(normalized[start:end])
+        start = end
+    return "\n\n".join(paragraphs)
 
 
 def _render_markdown(source: Path, model: str, language: str, text: str) -> str:
@@ -175,6 +230,8 @@ def transcribe_audio(
     if destination.exists():
         raise OutputError(f"transcript already exists; refusing to overwrite: {destination}")
 
+    if transcriber is None:
+        _ensure_ffmpeg_available()
     backend = transcriber or _load_transcriber()
     text_converter = converter or _load_converter()
     try:
@@ -187,9 +244,11 @@ def transcribe_audio(
         )
     except TranscriptionError:
         raise
-    except (FileNotFoundError, IsADirectoryError, KeyError, ValueError) as exc:
-        raise ModelError(f"unable to load model {model!r}: {exc}") from exc
     except Exception as exc:
+        if _is_dependency_error(exc):
+            raise DependencyError(f"local audio dependency failed: {exc}") from exc
+        if _is_model_error(exc):
+            raise ModelError(f"unable to load model {model!r}: {exc}") from exc
         raise InferenceError(f"local transcription failed: {exc}") from exc
 
     text = result.get("text") if isinstance(result, dict) else None

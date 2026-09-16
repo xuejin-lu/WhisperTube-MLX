@@ -129,12 +129,14 @@ non-zero result, a cause-specific message, and no success transcript being repor
   an explicitly selected smaller compatible model MUST be supported for constrained smoke runs.
 - **FR-005**: The system MUST write a Markdown document containing Taiwan Traditional Chinese
   transcript text grouped into readable paragraphs targeting roughly 500 Chinese characters per
-  paragraph, plus a minimal source/model metadata header, without embedding audio bytes or
-  credentials.
+  paragraph, preferring sentence or punctuation boundaries and using a hard-split fallback only
+  for unusually long spans, plus a minimal source/model metadata header, without embedding audio
+  bytes or credentials.
 - **FR-006**: The system MUST reject missing, non-file, unreadable, and unsupported input paths
   before model inference with a cause-specific non-zero result.
-- **FR-007**: The system MUST report missing MLX Whisper dependency, unavailable model, model-load,
-  and inference failures as distinct actionable non-zero errors.
+- **FR-007**: The system MUST report missing MLX Whisper, OpenCC, or local ffmpeg dependencies,
+  unavailable/model-load failures, and audio decode/inference failures as distinct actionable
+  non-zero errors.
 - **FR-008**: The system MUST reject repository-relative output paths outside documented ignored
   runtime directories, may use an explicitly provided local system-temporary path, reject unwritable
   destinations, and MUST NOT overwrite an existing transcript by default.

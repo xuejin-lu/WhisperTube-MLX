@@ -40,11 +40,18 @@ The Safari/browser-cookie fallback remains intentionally unexercised because ano
 
 ## Review findings
 
-v0.2 is **not yet approved for closure**. Repository review found three deterministic/spec-alignment gaps:
+The three deterministic/spec-alignment findings from the v0.2 review are resolved:
 
-1. **Paragraphs are hard-sliced, not natural/readable**: `format_paragraphs()` collapses whitespace and slices every 500 code points. This can split a sentence in the middle even though FR-005 and the project-level output requirement call for readable paragraphs targeting roughly 500 Chinese characters. Paragraph formation should prefer sentence/punctuation boundaries and only hard-split when no reasonable boundary exists.
-2. **Backend error classification can mislabel audio/dependency failures as model failures**: `transcribe_audio()` currently maps backend `FileNotFoundError`, `IsADirectoryError`, `KeyError`, and `ValueError` to `ModelError`. MLX Whisper audio decoding depends on local ffmpeg; a missing decoder or malformed/undecodable audio can therefore be reported as "unable to load model". v0.2 requires cause-specific dependency/model/inference handling. Add a deterministic preflight/error boundary so missing ffmpeg is a dependency error and audio decode/inference failures are not mislabeled as model errors.
-3. **OpenCC configuration drift**: the project-level specification names OpenCC `s2tw` (or a documented equivalent) and requires no semantic rewriting, while the implementation selects `s2twp`, which additionally performs Taiwan regional phrase conversion. Unless the feature spec intentionally and explicitly changes this product decision, use `s2tw` for the v0.2 baseline and test the selected configuration.
+1. `format_paragraphs()` now prefers sentence and punctuation boundaries near the 500-character
+   target, preserves transcript content, and uses a hard-split fallback for pathological spans.
+2. Real MLX runs perform a local ffmpeg preflight. Backend failures now distinguish ffmpeg/decoder
+   dependency failures, model-loading failures, and audio-decode/inference failures.
+3. The OpenCC adapter, CLI contract, research, plan, and tests consistently use the project baseline
+   `s2tw` configuration.
+
+The focused transcription suite passes 21 tests and the full deterministic suite passes 36 tests.
+The updated implementation also completed a real arm64 `whisper-tiny` smoke run and produced a new
+ignored Markdown transcript under `temp/transcripts-v0-2-review/`.
 
 ## Current milestone goal
 
@@ -56,20 +63,11 @@ Do **not** connect the YouTube downloader to transcription yet. End-to-end compo
 
 ## Current blocker
 
-The three review findings above block v0.2 approval. They are deterministic and should be resolved autonomously through Spec Kit convergence and TDD; no maintainer shell work or human authorization is required.
+None. The deterministic review findings are resolved; v0.2 is ready for maintainer review.
 
 ## Next autonomous task
 
-Run a v0.2 Spec Kit convergence pass for the three review findings above, then implement the corrective tasks with RED -> GREEN -> REFACTOR:
-
-- add sentence-aware / punctuation-aware paragraph-formatting tests around the ~500-character target while preserving transcript content;
-- replace fixed hard slicing with natural-boundary paragraph grouping, retaining a safe hard-split fallback for pathological long spans;
-- add deterministic error-boundary tests for missing ffmpeg/audio decode failure versus model/inference failure, then fix cause-specific classification;
-- reconcile OpenCC `s2tw` versus `s2twp` with the top-level project spec; absent an explicit product-spec change, use and test `s2tw`;
-- run focused tests, the full deterministic suite, local Apple Silicon smoke validation, CI, and `$speckit-converge`;
-- push and request review again.
-
-Do **not** start v0.3 until v0.2 is approved.
+Request maintainer review for v0.2. Do not connect the YouTube downloader to transcription until v0.3.
 
 ## Constraints carried forward
 

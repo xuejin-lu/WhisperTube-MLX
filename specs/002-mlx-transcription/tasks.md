@@ -94,6 +94,18 @@ correct metadata, UTF-8 text, local conversion, and no hosted call.
 - [X] T022 Run `$speckit-converge` against the v0.2 spec, plan, tasks, constitution, implementation, and tests; append any remaining work to this file
 - [X] T023 Push the coherent v0.2 commit and verify deterministic GitHub Actions CI is green before requesting review
 
+## Phase 7: Convergence — v0.2 Review Findings
+
+**Purpose**: Resolve the three deterministic review findings before v0.2 approval.
+
+- [X] T024 [P] [US1] Add RED tests proving paragraph formatting prefers sentence and punctuation boundaries near the 500-character target while preserving all transcript content in `tests/test_transcription.py` (FR-005, partial)
+- [X] T025 [US1] Replace fixed paragraph slicing with punctuation-aware grouping and a safe hard-split fallback in `whispertube/transcription.py`, then refactor with the focused suite green (FR-005, partial)
+- [X] T026 [P] [US3] Add RED tests for missing local ffmpeg dependency and audio decode failures, proving they are distinct from model-load failures in `tests/test_transcription.py` (FR-007, partial)
+- [X] T027 [US3] Add local ffmpeg preflight and cause-specific backend exception classification so dependency, model, and audio-decode/inference failures remain distinct in `whispertube/transcription.py` (FR-007, partial)
+- [X] T028 [P] [US1] Add a RED test asserting the lazy OpenCC adapter selects the project baseline `s2tw` configuration in `tests/test_transcription.py` (FR-005, contradicts)
+- [X] T029 [US1] Switch the OpenCC adapter to `s2tw` and keep spec, plan, research, and CLI contract terminology aligned in `whispertube/transcription.py` and `specs/002-mlx-transcription/` (FR-005, contradicts)
+- [X] T030 Run focused/full validation, local MLX smoke, `$speckit-converge`, and update `docs/STATUS.md` before push and review request (SC-001, SC-003, SC-005, partial)
+
 ## Dependencies and Execution Order
 
 - Phase 1 has no dependencies.

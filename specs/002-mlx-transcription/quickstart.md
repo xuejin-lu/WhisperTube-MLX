@@ -6,6 +6,7 @@ On the maintainer's Apple Silicon Mac:
 
 ```bash
 python3 -m pip install -r requirements-macos.txt
+brew install ffmpeg
 ```
 
 The first run may download the selected MLX model into the user's local model cache. That model

@@ -25,9 +25,10 @@ python3 -m whispertube.transcription INPUT [--output-dir PATH]
 
 - Validate input and output before importing or invoking the MLX backend.
 - Call the local MLX Whisper adapter with explicit `language="zh"` and `task="transcribe"`.
-- Convert returned text locally to Taiwan Traditional Chinese using OpenCC `s2twp`.
+- Convert returned text locally to Taiwan Traditional Chinese using OpenCC `s2tw`.
 - Group transcript text into readable paragraphs targeting roughly 500 Chinese characters each,
-  without summarizing or rewriting it.
+  preferring sentence or punctuation boundaries and using a hard-split fallback only for unusually
+  long spans, without summarizing or rewriting it.
 - Write exactly one UTF-8 Markdown transcript containing minimal source/model metadata and text.
 - Do not overwrite an existing transcript unless a future explicit overwrite option is specified.
 - Do not upload audio, transcripts, credentials, telemetry, or private runtime artifacts.

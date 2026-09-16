@@ -34,7 +34,7 @@
 ## Decision 3: Convert transcript text locally to Taiwan Traditional Chinese
 
 - **Decision**: Pass `language="zh"` and `task="transcribe"` to the MLX Whisper API, then apply the
-  deterministic OpenCC `s2twp` conversion to the returned text before Markdown output.
+  deterministic OpenCC `s2tw` conversion to the returned text before Markdown output.
 - **Rationale**: `transcribe` preserves speech recognition semantics rather than translation, while
   OpenCC provides offline dictionary-based Simplified-to-Taiwan-Traditional conversion aligned with
   the constitution's output path.

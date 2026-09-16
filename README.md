@@ -46,6 +46,7 @@ Install the Apple Silicon-only local inference dependencies:
 
 ```bash
 python3 -m pip install -r requirements-macos.txt
+brew install ffmpeg
 ```
 
 Transcribe one local audio file with the large-v3 quality target (or choose a

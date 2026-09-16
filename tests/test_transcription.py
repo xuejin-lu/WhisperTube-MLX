@@ -1,4 +1,6 @@
 import tempfile
+import sys
+import types
 import unittest
 from contextlib import redirect_stderr
 from io import StringIO
@@ -12,6 +14,7 @@ from whispertube.transcription import (
     InputError,
     ModelError,
     OutputError,
+    _load_converter,
     format_paragraphs,
     main,
     transcribe_audio,
@@ -47,6 +50,25 @@ class TranscriptionTests(unittest.TestCase):
         paragraphs = formatted.split("\n\n")
         self.assertEqual(len(paragraphs), 2)
         self.assertTrue(all(len(paragraph) <= 500 for paragraph in paragraphs))
+        self.assertEqual("".join(paragraphs), text)
+
+    def test_prefers_sentence_boundary_near_paragraph_target(self) -> None:
+        text = "甲" * 480 + "。" + "乙" * 119
+
+        formatted = format_paragraphs(text)
+
+        paragraphs = formatted.split("\n\n")
+        self.assertEqual(len(paragraphs), 2)
+        self.assertTrue(paragraphs[0].endswith("。"))
+        self.assertEqual("".join(paragraphs), text)
+
+    def test_hard_splits_pathological_span_without_losing_content(self) -> None:
+        text = "甲" * 1001
+
+        formatted = format_paragraphs(text)
+
+        paragraphs = formatted.split("\n\n")
+        self.assertEqual([len(paragraph) for paragraph in paragraphs], [500, 500, 1])
         self.assertEqual("".join(paragraphs), text)
 
     def test_uses_local_input_and_explicit_chinese_transcription(self) -> None:
@@ -190,6 +212,53 @@ class TranscriptionTests(unittest.TestCase):
                     transcriber=backend,
                     converter=lambda text: text,
                 )
+
+    def test_missing_ffmpeg_is_a_dependency_failure_before_backend(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = Path(temp_dir) / "lecture.wav"
+            source.write_bytes(b"local audio fixture")
+            backend = Mock()
+            with patch("whispertube.transcription.shutil.which", return_value=None):
+                with self.assertRaises(DependencyError):
+                    transcribe_audio(
+                        source,
+                        output_dir=Path(temp_dir) / "transcripts",
+                        transcriber=None,
+                        converter=lambda text: text,
+                    )
+            backend.assert_not_called()
+
+    def test_audio_decode_value_error_is_not_mislabeled_as_model_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = Path(temp_dir) / "lecture.wav"
+            source.write_bytes(b"local audio fixture")
+            with self.assertRaises(InferenceError):
+                transcribe_audio(
+                    source,
+                    output_dir=Path(temp_dir) / "transcripts",
+                    transcriber=Mock(side_effect=ValueError("audio decode failed")),
+                    converter=lambda text: text,
+                )
+
+    def test_backend_missing_ffmpeg_is_a_dependency_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            source = Path(temp_dir) / "lecture.wav"
+            source.write_bytes(b"local audio fixture")
+            with self.assertRaises(DependencyError):
+                transcribe_audio(
+                    source,
+                    output_dir=Path(temp_dir) / "transcripts",
+                    transcriber=Mock(side_effect=FileNotFoundError("ffmpeg executable not found")),
+                    converter=lambda text: text,
+                )
+
+    def test_opencc_adapter_uses_s2tw(self) -> None:
+        factory = Mock(return_value=Mock(convert=lambda text: text))
+        fake_opencc = types.SimpleNamespace(OpenCC=factory)
+        with patch.dict(sys.modules, {"opencc": fake_opencc}):
+            _load_converter()
+
+        factory.assert_called_once_with("s2tw")
 
     def test_inference_failure_and_empty_text_are_distinct_from_input(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
