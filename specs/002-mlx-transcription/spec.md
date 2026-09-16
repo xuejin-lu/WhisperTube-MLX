@@ -4,24 +4,11 @@
 
 **Created**: 2026-09-16
 
-**Status**: In Progress
+**Status**: Complete
 
 **Input**: User description: "Establish a local Apple Silicon MLX-compatible Whisper transcription path for Chinese audio transcripts with local-only processing, model and dependency error handling, and no cloud transcription dependency."
 
 ## User Scenarios & Testing *(mandatory)*
-
-<!--
-  IMPORTANT: User stories should be PRIORITIZED as user journeys ordered by importance.
-  Each user story/journey must be INDEPENDENTLY TESTABLE - meaning if you implement just ONE of them,
-  you should still have a viable MVP (Minimum Viable Product) that delivers value.
-
-  Assign priorities (P1, P2, P3, etc.) to each story, where P1 is the most critical.
-  Think of each story as a standalone slice of functionality that can be:
-  - Developed independently
-  - Tested independently
-  - Deployed independently
-  - Demonstrated to users independently
--->
 
 ### User Story 1 - Transcribe Local Audio to Chinese Markdown (Priority: P1)
 
@@ -93,14 +80,7 @@ non-zero result, a cause-specific message, and no success transcript being repor
 
 ---
 
-[Add more user stories as needed, each with an assigned priority]
-
 ### Edge Cases
-
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right edge cases.
--->
 
 - The input path does not exist, is a directory, is unreadable, or has an unsupported audio format.
 - The output directory is absent, outside the documented ignored runtime paths, or unwritable.
@@ -111,11 +91,6 @@ non-zero result, a cause-specific message, and no success transcript being repor
 - A local model cache or downloaded model artifact must remain outside versioned source paths.
 
 ## Requirements *(mandatory)*
-
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right functional requirements.
--->
 
 ### Functional Requirements
 
@@ -146,7 +121,7 @@ non-zero result, a cause-specific message, and no success transcript being repor
   selection, output formatting, privacy boundaries, and cause-specific error handling without
   requiring MLX hardware or a live model download.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities
 
 - **Local Audio Input**: One user-selected audio file path, its readable-file state, and its source
   format as accepted by the local decoder.
@@ -158,11 +133,6 @@ non-zero result, a cause-specific message, and no success transcript being repor
   configuration, and one result or cause-specific failure.
 
 ## Success Criteria *(mandatory)*
-
-<!--
-  ACTION REQUIRED: Define measurable success criteria.
-  These must be technology-agnostic and measurable.
--->
 
 ### Measurable Outcomes
 
@@ -178,12 +148,6 @@ non-zero result, a cause-specific message, and no success transcript being repor
   whether any human gate occurred without recording audio contents or credentials.
 
 ## Assumptions
-
-<!--
-  ACTION REQUIRED: The content in this section represents placeholders.
-  Fill them out with the right assumptions based on reasonable defaults
-  chosen when the feature description did not specify certain details.
--->
 
 - The target machine is macOS on Apple Silicon and can install the free/open MLX Whisper dependency
   and ffmpeg locally.
