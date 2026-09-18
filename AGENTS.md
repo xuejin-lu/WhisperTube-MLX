@@ -80,6 +80,7 @@ Codex must execute mechanical work itself whenever technically possible, includi
 - running format/lint/static checks;
 - reviewing Spec Kit checklists and fixing source artifacts;
 - updating specs/plans/tasks/status documentation;
+- persisting review-relevant facts in GitHub before handoff, especially `docs/STATUS.md`, active Spec Kit tasks/checklists, and commit/CI state;
 - committing, rebasing, and pushing changes;
 - checking CI results when available.
 
@@ -121,13 +122,28 @@ Until the formal Spec Kit constitution is generated, these rules are binding:
 - CI must remain green for deterministic tests before declaring a task complete.
 - If remote changed concurrently, fetch/rebase safely instead of asking the maintainer to resolve a routine non-conflicting divergence.
 
-## Current migration instruction
+## Current-state instruction
 
-Read `docs/SPECKIT_ADOPTION.md` and `docs/CHECKLIST_REVIEW_POLICY.md` before the next implementation task. Complete the Spec Kit adoption and convergence of the current v0.1 work before moving to v0.2.
+Read `docs/STATUS.md`, the active Spec Kit feature, `docs/SPECKIT_ADOPTION.md`, and `docs/CHECKLIST_REVIEW_POLICY.md` before implementation. Do not rely on a hard-coded historical milestone in this file; `docs/STATUS.md` and the active feature artifacts define the current work.
+
+## Review handoff
+
+GitHub is the canonical handoff between Codex and the review assistant.
+
+Before declaring a run review-ready, Codex must:
+
+1. update `docs/STATUS.md` with the active milestone, verified facts, unresolved risks/blockers, and the exact review state;
+2. update the active Spec Kit tasks/checklists/spec as required;
+3. commit and push all reviewable code and documentation;
+4. verify deterministic CI and record the relevant commit/run in repository state when useful.
+
+The maintainer must **not** be required to copy/paste the Development Report into ChatGPT. After Codex finishes, the maintainer may simply tell the review assistant **「review」** / **「檢查 GitHub」**. The review assistant then inspects the pushed repository directly.
+
+Because this chat is not automatically notified by GitHub pushes, one short review trigger from the maintainer is still required unless a separate notification automation is configured.
 
 ## Development report
 
-Finish each autonomous run with:
+Finish each autonomous run with the following report for the Codex UI / human convenience. This report is **not** a required transport mechanism to the review assistant; all facts needed for review must already be persisted in GitHub:
 
 ```markdown
 # Development Report
