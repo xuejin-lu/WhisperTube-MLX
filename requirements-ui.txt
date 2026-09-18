@@ -1,0 +1,2 @@
+# Local-only v0.4 graphical interface dependency.
+gradio==6.27.0

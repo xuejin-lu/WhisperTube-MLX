@@ -84,3 +84,37 @@ python3 -m whispertube.pipeline 'https://www.youtube.com/watch?v=VIDEO_ID' \
 The pipeline cleans only audio acquired inside its current temporary directory,
 keeps the Markdown transcript, and preserves download, dependency, model,
 inference, output, and cleanup error categories.
+
+## v0.4: local graphical UI
+
+Install the pinned local UI dependency in addition to the Apple Silicon
+inference dependencies:
+
+```bash
+python3 -m pip install -r requirements-ui.txt
+python3 -m pip install -r requirements-macos.txt
+```
+
+Launch the interface and open its loopback URL in the local browser:
+
+```bash
+python3 -m whispertube.gui
+```
+
+The UI provides one YouTube URL input, one Transcribe action, visible
+running/success/error status, a Markdown preview, and a local Markdown
+download. It reuses the v0.3 pipeline and preserves its cause-specific errors.
+
+The server binds explicitly to `127.0.0.1`; public sharing, framework
+analytics, monitoring, and direct queue bypass are disabled. Only validated
+non-empty UTF-8 Markdown below the configured ignored transcript directory can
+be previewed or downloaded. No public tunnel, hosted processing, telemetry,
+account, or database is used.
+
+For a constrained local smoke test, select the small model at launch without
+changing the normal large-v3 quality target:
+
+```bash
+python3 -m whispertube.gui --model mlx-community/whisper-tiny \
+  --audio-dir temp/gui-audio-v0-4 --output-dir temp/gui-transcripts-v0-4
+```

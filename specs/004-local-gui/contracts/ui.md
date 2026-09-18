@@ -34,6 +34,6 @@ The process opens or serves one loopback-only browser interface. It never enable
 - share/tunnel: disabled;
 - analytics: disabled;
 - monitoring endpoint: disabled;
-- direct event API bypass: disabled;
+- direct event API bypass: disabled and event visibility private;
 - file access: configured transcript root only, with callback-level path/type/content validation;
 - no uploads, credentials, hosted inference, accounts, database, or telemetry.
