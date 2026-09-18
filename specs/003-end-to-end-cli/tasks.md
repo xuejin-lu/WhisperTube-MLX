@@ -42,3 +42,12 @@
 
 T001–T003 precede all user stories. T004 precedes T005; T006 precedes T007; T008 precedes T009.
 T010–T012 follow all stories. All behavior changes require RED → GREEN → REFACTOR.
+
+## Phase 7: Convergence
+
+- [X] T013 [US2] Add RED tests for simultaneous transcription failure and cleanup failure while preserving the original stage category and reporting residual-audio risk in `tests/test_pipeline.py` per FR-010 and SC-006 (missing)
+- [X] T014 [US2] Implement combined stage-and-cleanup failure reporting in `whispertube/pipeline.py` per FR-010 (partial)
+- [X] T015 [US2] Add RED tests for partial artifacts left in a dedicated current-run acquisition directory after acquisition failure in `tests/test_pipeline.py` per FR-011 and SC-006 (missing)
+- [X] T016 [US2] Implement safe default-acquirer failure cleanup limited to its dedicated `run-*` directory in `whispertube/pipeline.py` per FR-011 (partial)
+- [X] T017 Align `research.md`, `data-model.md`, `contracts/cli.md`, and `quickstart.md` with simultaneous stage-and-cleanup failure reporting and dedicated run-directory ownership per FR-010–FR-011 (contradicts)
+- [X] T018 Run focused/full tests, static checks, real small-model public-video smoke, artifact inspection, `$speckit-converge`, and update `docs/STATUS.md` per Constitution IV and SC-005 (partial)

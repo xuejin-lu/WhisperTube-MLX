@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -68,6 +69,26 @@ def _prepare_audio_root(audio_dir: str | Path) -> Path:
     return path
 
 
+def _report_cleanup_failure(failure: Exception, artifact: Path, cleanup_error: OSError) -> None:
+    warning = (
+        f"cleanup failed for current-run audio {artifact}: {cleanup_error}; "
+        "current-run audio may remain"
+    )
+    if failure.args:
+        failure.args = (f"{failure.args[0]}; {warning}", *failure.args[1:])
+    else:
+        failure.args = (warning,)
+
+
+def _cleanup_failed_run_directory(run_dir: Path, failure: Exception) -> None:
+    try:
+        shutil.rmtree(run_dir)
+    except FileNotFoundError:
+        return
+    except OSError as exc:
+        _report_cleanup_failure(failure, run_dir, exc)
+
+
 def _default_acquire(
     url: str,
     *,
@@ -81,15 +102,19 @@ def _default_acquire(
     if cookies_from_browser:
         argv.extend(["--cookies-from-browser", cookies_from_browser])
     try:
-        result = youtube.main(argv)
-    except SystemExit as exc:
-        raise DownloadError(f"invalid download request (exit {exc.code})") from exc
-    if result != 0:
-        raise DownloadError(f"YouTube acquisition failed with exit code {result}")
-    artifacts = [path for path in run_dir.iterdir() if path.is_file()]
-    if len(artifacts) != 1:
-        raise DownloadError(f"acquisition produced {len(artifacts)} files; expected exactly one")
-    return artifacts[0]
+        try:
+            result = youtube.main(argv)
+        except SystemExit as exc:
+            raise DownloadError(f"invalid download request (exit {exc.code})") from exc
+        if result != 0:
+            raise DownloadError(f"YouTube acquisition failed with exit code {result}")
+        artifacts = [path for path in run_dir.iterdir() if path.is_file()]
+        if len(artifacts) != 1:
+            raise DownloadError(f"acquisition produced {len(artifacts)} files; expected exactly one")
+        return artifacts[0]
+    except Exception as exc:
+        _cleanup_failed_run_directory(run_dir, exc)
+        raise
 
 
 def run_pipeline(
@@ -109,7 +134,7 @@ def run_pipeline(
     acquirer = acquire or _default_acquire
     transcriber = transcribe or transcribe_audio
     owned_audio: Path | None = None
-    failed = False
+    failure: Exception | None = None
     try:
         try:
             candidate = Path(
@@ -131,8 +156,8 @@ def run_pipeline(
             raise DownloadError("acquisition did not return a regular audio file")
         owned_audio = candidate
         return Path(transcriber(candidate, output_dir=output_dir, model=model))
-    except Exception:
-        failed = True
+    except Exception as exc:
+        failure = exc
         raise
     finally:
         if owned_audio is not None:
@@ -144,8 +169,9 @@ def run_pipeline(
                     except OSError:
                         pass
             except OSError as exc:
-                if not failed:
+                if failure is None:
                     raise CleanupError(f"cannot remove temporary audio {owned_audio}: {exc}") from exc
+                _report_cleanup_failure(failure, owned_audio, exc)
 
 
 def _build_parser() -> argparse.ArgumentParser:

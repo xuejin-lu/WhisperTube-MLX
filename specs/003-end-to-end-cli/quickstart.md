@@ -9,3 +9,5 @@ python3 -m whispertube.pipeline 'https://www.youtube.com/watch?v=gmj41fQTbfY' \
 ```
 
 Expect one local Markdown path and no current-run audio remaining under `temp/pipeline-audio/`.
+Acquisition failure also removes its dedicated `run-*` directory. If cleanup itself fails, the CLI
+retains the original stage category and exit code while warning that current-run audio may remain.

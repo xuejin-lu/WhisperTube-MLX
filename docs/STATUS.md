@@ -53,45 +53,40 @@ The composition must reuse the approved v0.1 acquisition and v0.2 transcription 
 - Deterministic pipeline tests cover option propagation, current-run cleanup after success/failure,
   arbitrary-path deletion protection, missing cleanup artifacts, cleanup errors, stage failure
   preservation, and CLI results.
-- The full deterministic suite passes 44 tests; `compileall` and `git diff --check` pass.
+- The focused pipeline suite passes 10 tests and the full deterministic suite passes 46 tests;
+  `compileall` and `git diff --check` pass.
 - A real anonymous Apple Silicon smoke used the approved public video, yt-dlp format 251, and
   `mlx-community/whisper-tiny`. It completed in 49.38 seconds, retained one 33,165-byte Markdown
   transcript under `temp/pipeline-transcripts-v0-3/`, and left no audio file under
   `temp/pipeline-audio-v0-3/`. No human gate or browser credentials were required.
 - GitHub Actions run `35400404115` passed for pushed implementation commit `57043bf`.
 - GitHub Actions run `35400442064` passed for final verification commit `b210abd`.
+- A post-review real anonymous Apple Silicon smoke again selected yt-dlp format 251 and
+  `mlx-community/whisper-tiny`, retained one 34,008-byte Markdown transcript under
+  `temp/pipeline-transcripts-v0-3-review-fix/`, and left
+  `temp/pipeline-audio-v0-3-review-fix/` empty. No human gate or browser credentials were required.
 
-## Review findings
+## Review finding remediation
 
-v0.3 is **not yet approved for closure**. Repository review found one privacy-relevant cleanup gap:
+v0.3 remains **not yet approved for closure** pending re-review. The privacy-relevant cleanup findings
+have been remediated:
 
-1. **Cleanup failure is silently suppressed when transcription has already failed.** In `run_pipeline()`,
-   the `finally` block ignores `OSError` from `owned_audio.unlink()` whenever another exception is
-   already active. This preserves the original transcription error, but it can leave private current-run
-   audio on disk without telling the user that cleanup failed. The v0.3 contract now requires preserving
-   the original stage category **and** surfacing the cleanup failure/residual-artifact risk.
-2. **Current-run acquisition directories should be cleaned on acquisition failure when safe.** The
-   default acquirer owns a dedicated `run-*` directory. If yt-dlp fails after creating partial
-   current-run artifacts, that directory can currently be left behind. Because the directory is
-   exclusively owned by the current run, failure cleanup should remove only those artifacts while
-   preserving the arbitrary-path deletion protections already present.
+1. A transcription failure remains the original exception class, category, and exit code when audio
+   cleanup also fails; its actionable message now reports the cleanup failure and residual-audio risk.
+2. The default acquirer removes partial artifacts by recursively deleting only the dedicated `run-*`
+   directory it created for that run after acquisition failure.
+3. New deterministic tests captured both gaps as RED before implementation and now pass without
+   weakening the existing arbitrary-path deletion test.
 
 ## Current blocker
 
-The cleanup/error-reporting gap above blocks v0.3 approval. It is deterministic and does not require a Human Gate.
+No implementation blocker or Human Gate. Push and deterministic CI verification are pending for the
+remediation commit before repository re-review.
 
 ## Next autonomous task
 
-Run a focused v0.3 Spec Kit convergence pass for the review findings above:
-
-- add RED tests for transcription failure + cleanup failure, proving the original transcription category
-  remains visible while cleanup failure/residual-audio risk is also reported;
-- add RED coverage for partial artifacts left in the dedicated current-run acquisition directory when
-  acquisition fails;
-- implement safe current-run cleanup without weakening arbitrary-path deletion protection;
-- keep successful-transcription cleanup behavior and transcript retention unchanged;
-- run focused pipeline tests, the full suite, local end-to-end smoke, CI, and `$speckit-converge`;
-- persist the new review state in GitHub and request review again.
+Commit and push the converged v0.3 remediation, verify deterministic CI, persist the final review
+state, and request repository review again.
 
 Do **not** start v0.4 until v0.3 is approved.
 

@@ -104,6 +104,47 @@ class PipelineTests(unittest.TestCase):
                         transcribe=Mock(return_value=Path(temp_dir) / "video.md"),
                     )
 
+    def test_cleanup_failure_preserves_transcription_category_and_reports_residual_audio(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audio = Path(temp_dir) / "audio" / "video.webm"
+            audio.parent.mkdir()
+            audio.write_bytes(b"audio")
+            with patch("pathlib.Path.unlink", side_effect=PermissionError("denied")):
+                with self.assertRaises(ModelError) as caught:
+                    run_pipeline(
+                        "https://youtu.be/gmj41fQTbfY",
+                        audio_dir=audio.parent,
+                        acquire=Mock(return_value=audio),
+                        transcribe=Mock(side_effect=ModelError("missing model")),
+                    )
+
+            self.assertEqual(caught.exception.category, "model")
+            self.assertEqual(caught.exception.exit_code, ModelError.exit_code)
+            self.assertIn("cleanup failed", str(caught.exception))
+            self.assertIn("current-run audio may remain", str(caught.exception))
+            self.assertTrue(audio.exists())
+
+    def test_default_acquirer_removes_partial_run_directory_after_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            audio_root = Path(temp_dir) / "audio"
+            transcribe = Mock()
+
+            def fail_after_partial_download(argv):
+                run_dir = Path(argv[argv.index("--output-dir") + 1])
+                (run_dir / "partial.webm").write_bytes(b"partial")
+                return 1
+
+            with patch("whispertube.pipeline.youtube.main", side_effect=fail_after_partial_download):
+                with self.assertRaises(DownloadError):
+                    run_pipeline(
+                        "https://youtu.be/gmj41fQTbfY",
+                        audio_dir=audio_root,
+                        transcribe=transcribe,
+                    )
+
+            transcribe.assert_not_called()
+            self.assertEqual(list(audio_root.iterdir()), [])
+
     def test_download_failure_does_not_call_transcription(self) -> None:
         transcribe = Mock()
         with self.assertRaises(DownloadError):
