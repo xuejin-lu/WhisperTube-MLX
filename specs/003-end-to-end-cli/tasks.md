@@ -36,7 +36,7 @@
 
 - [X] T010 Update `README.md`, `docs/PROJECT_SPEC.md`, `docs/STATUS.md`, and `specs/003-end-to-end-cli/quickstart.md`
 - [X] T011 Run focused/full tests, static checks, real small-model public-video smoke, artifact inspection, and `$speckit-converge`
-- [ ] T012 Push and verify CI before requesting review
+- [X] T012 Push and verify CI before requesting review
 
 ## Dependencies
 
