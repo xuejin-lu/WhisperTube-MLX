@@ -194,6 +194,10 @@ Acceptance criteria:
 - Markdown output is generated;
 - error source is distinguishable (download vs transcription vs output).
 
+Implementation note: the pipeline reuses the approved acquisition and transcription
+boundaries, owns only current-run temporary audio, cleans that audio after success or
+transcription failure, and never treats the transcript as cleanup-eligible.
+
 ### v0.4 — Local graphical UI
 
 Goal: minimal interface for non-technical use.

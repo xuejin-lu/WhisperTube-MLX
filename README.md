@@ -69,3 +69,18 @@ On the development Apple Silicon Mac, a 2026-09-16 smoke run used
 completed successfully with recognizable Chinese transcript output.
 The run emitted a warning about no JavaScript runtime, but completed without
 requiring browser cookies.
+
+## v0.3: end-to-end CLI pipeline
+
+Run both approved local stages with one command:
+
+```bash
+python3 -m whispertube.pipeline 'https://www.youtube.com/watch?v=VIDEO_ID' \
+  --model mlx-community/whisper-large-v3-mlx \
+  --audio-dir temp/pipeline-audio \
+  --output-dir temp/pipeline-transcripts
+```
+
+The pipeline cleans only audio acquired inside its current temporary directory,
+keeps the Markdown transcript, and preserves download, dependency, model,
+inference, output, and cleanup error categories.
