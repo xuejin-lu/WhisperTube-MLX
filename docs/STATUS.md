@@ -61,14 +61,39 @@ The composition must reuse the approved v0.1 acquisition and v0.2 transcription 
 - GitHub Actions run `35400404115` passed for pushed implementation commit `57043bf`.
 - GitHub Actions run `35400442064` passed for final verification commit `b210abd`.
 
+## Review findings
+
+v0.3 is **not yet approved for closure**. Repository review found one privacy-relevant cleanup gap:
+
+1. **Cleanup failure is silently suppressed when transcription has already failed.** In `run_pipeline()`,
+   the `finally` block ignores `OSError` from `owned_audio.unlink()` whenever another exception is
+   already active. This preserves the original transcription error, but it can leave private current-run
+   audio on disk without telling the user that cleanup failed. The v0.3 contract now requires preserving
+   the original stage category **and** surfacing the cleanup failure/residual-artifact risk.
+2. **Current-run acquisition directories should be cleaned on acquisition failure when safe.** The
+   default acquirer owns a dedicated `run-*` directory. If yt-dlp fails after creating partial
+   current-run artifacts, that directory can currently be left behind. Because the directory is
+   exclusively owned by the current run, failure cleanup should remove only those artifacts while
+   preserving the arbitrary-path deletion protections already present.
+
 ## Current blocker
 
-None. v0.3 is pushed, CI-green, converged, and ready for repository review.
+The cleanup/error-reporting gap above blocks v0.3 approval. It is deterministic and does not require a Human Gate.
 
 ## Next autonomous task
 
-Await repository review of the pushed v0.3 feature. On the next autonomous run, synchronize and
-address review findings if present. Do not start v0.4 until v0.3 is explicitly approved.
+Run a focused v0.3 Spec Kit convergence pass for the review findings above:
+
+- add RED tests for transcription failure + cleanup failure, proving the original transcription category
+  remains visible while cleanup failure/residual-audio risk is also reported;
+- add RED coverage for partial artifacts left in the dedicated current-run acquisition directory when
+  acquisition fails;
+- implement safe current-run cleanup without weakening arbitrary-path deletion protection;
+- keep successful-transcription cleanup behavior and transcript retention unchanged;
+- run focused pipeline tests, the full suite, local end-to-end smoke, CI, and `$speckit-converge`;
+- persist the new review state in GitHub and request review again.
+
+Do **not** start v0.4 until v0.3 is approved.
 
 ## v0.3 scope constraints
 
