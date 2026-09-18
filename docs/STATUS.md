@@ -59,27 +59,16 @@ The composition must reuse the approved v0.1 acquisition and v0.2 transcription 
   transcript under `temp/pipeline-transcripts-v0-3/`, and left no audio file under
   `temp/pipeline-audio-v0-3/`. No human gate or browser credentials were required.
 - GitHub Actions run `35400404115` passed for pushed implementation commit `57043bf`.
+- GitHub Actions run `35400442064` passed for final verification commit `b210abd`.
 
 ## Current blocker
 
-None. v0.3 is ready for repository review after pushed CI verification.
+None. v0.3 is pushed, CI-green, converged, and ready for repository review.
 
 ## Next autonomous task
 
-Request repository review for the v0.3 **End-to-end CLI pipeline** feature.
-
-Codex should autonomously:
-
-1. create a new Spec Kit feature for the end-to-end pipeline;
-2. specify the one-command CLI contract and acceptance criteria;
-3. define temporary audio lifecycle/cleanup behavior explicitly;
-4. preserve cause-specific error boundaries so download, dependency/model/inference, and output failures remain distinguishable;
-5. reuse `whispertube.youtube` and `whispertube.transcription` rather than reimplementing them;
-6. add deterministic orchestration tests first (RED), using injected/fake stage boundaries so CI requires no YouTube, model download, or Apple Silicon hardware;
-7. implement the minimum composition layer (GREEN), then refactor with existing v0.1/v0.2 suites still green;
-8. run a real local end-to-end smoke on the approved public test video with an explicit small MLX model unless the spec justifies another safe fixture;
-9. verify temporary media cleanup and that no cookie, model cache, downloaded media, or transcript is accidentally versioned;
-10. run the full deterministic suite, CI, `$speckit-converge`, push, and request review.
+Await repository review of the pushed v0.3 feature. On the next autonomous run, synchronize and
+address review findings if present. Do not start v0.4 until v0.3 is explicitly approved.
 
 ## v0.3 scope constraints
 
