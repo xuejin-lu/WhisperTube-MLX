@@ -39,6 +39,7 @@ A maintainer can rely on the pipeline to clean downloaded temporary audio after 
 1. **Given** the pipeline acquired an audio artifact during this run, **When** transcription succeeds, **Then** the acquired audio is removed and the Markdown transcript remains.
 2. **Given** the pipeline acquired an audio artifact during this run, **When** transcription fails, **Then** the acquired audio is still removed and the original failure is reported.
 3. **Given** acquisition fails before reporting an artifact, **When** the pipeline exits, **Then** it does not delete any pre-existing media or transcript path.
+4. **Given** transcription fails and cleanup of the current-run audio also fails, **When** the pipeline exits, **Then** it preserves the original transcription failure category while also reporting that cleanup failed and that current-run audio may remain.
 
 ---
 
@@ -61,6 +62,8 @@ A maintainer receives an actionable non-zero error that identifies whether failu
 - A transcript output path already exists and the transcription stage refuses to overwrite it.
 - Temporary audio has already disappeared by the time cleanup is attempted.
 - Cleanup itself fails after a successful transcription.
+- Cleanup itself fails while a transcription error is already being reported.
+- Acquisition fails after creating one or more partial artifacts inside its dedicated current-run directory.
 - A local browser-cookie fallback needs macOS permission or login during a real smoke run.
 
 ## Requirements *(mandatory)*
@@ -74,6 +77,8 @@ A maintainer receives an actionable non-zero error that identifies whether failu
 - **FR-005**: The pipeline MUST leave the generated Markdown transcript intact after successful cleanup and MUST NOT delete pre-existing media, transcripts, cookies, model caches, or credentials.
 - **FR-006**: The pipeline MUST preserve a download failure as distinct from a transcription dependency, model, inference, or output failure, with an actionable non-zero CLI result.
 - **FR-007**: If cleanup fails after a successful transcript is written, the pipeline MUST report an actionable cleanup failure without deleting the transcript or misreporting the transcription result.
+- **FR-010**: If cleanup fails while another stage failure is already being reported, the pipeline MUST NOT silently suppress the cleanup failure; it MUST preserve the original stage category and also surface that current-run audio may remain.
+- **FR-011**: A dedicated current-run acquisition directory MAY be cleaned on acquisition failure because it is owned exclusively by that run; such cleanup MUST NOT extend to pre-existing or arbitrary paths.
 - **FR-008**: The pipeline MUST keep media and private data local and MUST NOT add hosted processing, telemetry, playlists, batch operation, summarization, diarization, timestamps, or a GUI.
 - **FR-009**: The system MUST provide deterministic injected-stage tests for composition, propagated options, cleanup, and cause-specific failures; CI MUST not need YouTube, browser cookies, model downloads, or Apple Silicon hardware.
 
@@ -92,6 +97,7 @@ A maintainer receives an actionable non-zero error that identifies whether failu
 - **SC-003**: 100% of deterministic stage-failure tests report a non-zero result whose category distinguishes download from dependency/model/inference/output/cleanup failure.
 - **SC-004**: Deterministic CI completes without network media acquisition, browser credentials, model downloads, or Apple Silicon hardware.
 - **SC-005**: A local smoke run records selected model, transcript path, temporary-audio cleanup outcome, and any human gate without recording private media contents or credentials.
+- **SC-006**: Deterministic failure tests cover simultaneous stage-failure + cleanup-failure handling and acquisition-failure cleanup without silently leaving the user unaware of current-run artifacts.
 
 ## Assumptions
 
