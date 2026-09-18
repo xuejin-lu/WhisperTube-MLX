@@ -65,6 +65,7 @@ The composition must reuse the approved v0.1 acquisition and v0.2 transcription 
   `mlx-community/whisper-tiny`, retained one 34,008-byte Markdown transcript under
   `temp/pipeline-transcripts-v0-3-review-fix/`, and left
   `temp/pipeline-audio-v0-3-review-fix/` empty. No human gate or browser credentials were required.
+- GitHub Actions run `35402460908` passed for remediation commit `434c0c0`.
 
 ## Review finding remediation
 
@@ -80,13 +81,13 @@ have been remediated:
 
 ## Current blocker
 
-No implementation blocker or Human Gate. Push and deterministic CI verification are pending for the
-remediation commit before repository re-review.
+None. The remediation is pushed, deterministic CI is green, Spec Kit is converged, and no Human Gate
+is open.
 
 ## Next autonomous task
 
-Commit and push the converged v0.3 remediation, verify deterministic CI, persist the final review
-state, and request repository review again.
+Await repository re-review of the pushed v0.3 remediation. Address review findings if present. Do not
+start v0.4 until v0.3 is explicitly approved.
 
 Do **not** start v0.4 until v0.3 is approved.
 
