@@ -12,7 +12,8 @@ The human maintainer:
 
 - decides product direction when the specification does not already decide it;
 - grants exceptional OS/browser permissions when a human action is truly required;
-- reviews development reports and final product behavior;
+- signals when a pushed Codex run is ready for review and decides product direction when needed;
+- does **not** copy/paste Codex reports between tools;
 - does **not** act as the routine shell-command runner.
 
 ### Codex
@@ -30,7 +31,7 @@ When told **「開始」**, Codex should:
 7. update spec/plan/tasks/status artifacts;
 8. commit and push;
 9. check CI;
-10. return a review-ready report.
+10. persist a review-ready handoff in GitHub and optionally return a convenience report in the Codex UI.
 
 ### Review assistant
 
@@ -68,13 +69,14 @@ Commit + push
 GitHub Actions CI
         |
         v
-Codex returns Development Report
+Codex persists review state in GitHub
+(STATUS + Spec Kit artifacts + commits + CI)
         |
         v
-Maintainer pastes report into review chat
+Maintainer says only 「review」 / 「檢查 GitHub」
         |
         v
-Review assistant inspects pushed code
+Review assistant inspects pushed code and repository state
         |
         +--> approved -> next 「開始」
         |
@@ -204,20 +206,30 @@ Do not ask the maintainer to resolve a routine non-conflicting divergence.
 
 Never commit generated media, browser cookies, credentials, private transcripts, or model caches.
 
-## 8. Development report
+## 8. Review handoff and Development Report
 
-The canonical report format is defined in `AGENTS.md` and must include:
+The **canonical handoff is GitHub**, not copied chat text.
+
+Before handoff, Codex must persist the information required for review in repository state:
 
 - active spec and acceptance criteria addressed;
-- RED/GREEN/REFACTOR evidence;
-- changes;
-- validation and smoke-test evidence;
-- CI status;
-- human gate (normally `None`);
-- Spec Kit convergence status;
+- completed/remaining Spec Kit tasks and checklist state;
+- verified behavior and smoke-test facts in `docs/STATUS.md`;
 - risks/blockers;
 - pushed commit/branch;
-- exactly one next action or `Review requested`.
+- deterministic CI state.
+
+Codex may still display the Development Report format defined in `AGENTS.md` for human readability, but the maintainer does **not** need to paste that report into the review chat.
+
+Normal review trigger:
+
+```text
+Codex finishes and pushes
+→ maintainer tells ChatGPT: "review"
+→ review assistant reads GitHub directly
+```
+
+A short trigger is still needed because the review chat is not automatically notified when GitHub changes. If a separate notification automation is later configured, even that trigger can be removed.
 
 ## 9. Release discipline
 
