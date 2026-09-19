@@ -144,9 +144,11 @@ Verified locally so far:
 Remaining candidate work before review-ready handoff:
 
 - Spec Kit converge is complete with no remaining tasks appended;
-- run final artifact inspection over the staged candidate contents and CI after push;
+- staged candidate artifact inspection is clean, and deterministic CI passed for implementation commit `a165701` in GitHub Actions run `35436400122`;
 - keep full large-v3 performance unmeasured, Safari cookie fallback unexercised, and the yt-dlp JavaScript-runtime warning documented as risks;
 - do not publish the actual GitHub Release until repository review explicitly approves the candidate.
+
+**Review state**: v1.0 implementation is pushed and ready for repository review. The remaining action is review approval before creating the actual GitHub Release.
 
 ## Spec Kit convergence
 
