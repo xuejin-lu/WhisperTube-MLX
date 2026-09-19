@@ -4,7 +4,7 @@
 
 **Created**: 2026-09-19
 
-**Status**: Draft
+**Status**: Complete — release candidate approved for publication
 
 **Input**: Turn the approved v0.1-v0.4 local pipeline and GUI into a reproducible public release for Apple Silicon macOS users.
 
