@@ -40,6 +40,7 @@ The check must not execute arbitrary user input, inspect cookies, or mutate the 
 - Must locate the same project root and `.venv` as setup.
 - Must fail with a setup hint when `.venv/bin/python` is absent.
 - Must invoke `python -m whispertube.gui` with user-provided arguments unchanged after the launcher options.
+- Must ensure runtime executables installed into the project virtual environment, especially `.venv/bin/yt-dlp`, are discoverable by subprocesses launched by the GUI/pipeline even when the user's ambient PATH has no global `yt-dlp`.
 - Must not add `--share`, a non-loopback server name, or broad file-serving paths.
 
 ## Documentation contract
