@@ -1,6 +1,38 @@
 # WhisperTube-MLX
 Local YouTube transcription app powered by MLX Whisper for Apple Silicon.
 
+## v1.0: public Apple Silicon release
+
+v1.0 is distributed as a versioned source release with a reproducible local setup
+and launch path. It targets a native Apple Silicon Mac running macOS 14 or later,
+native Python 3.10+, and local `ffmpeg`. It does not ship a signed/notarized app,
+public tunnel, hosted transcription, telemetry, account, or database.
+
+From an unpacked checkout or source release archive, run:
+
+```bash
+./scripts/setup_macos.sh
+./scripts/launch_macos.sh
+```
+
+The setup creates or reuses `.venv` and installs the pinned local dependencies.
+It never deletes `outputs/`, `temp/`, browser cookies, credentials, or model
+caches. The GUI remains loopback-only at `127.0.0.1`. Check the project version
+or prerequisites with:
+
+```bash
+./.venv/bin/python -m whispertube.release --version
+./.venv/bin/python -m whispertube.release --check
+```
+
+The normal quality target is `mlx-community/whisper-large-v3-mlx`; the first use
+may download a local model cache. For a constrained validation run, select
+`mlx-community/whisper-tiny` explicitly. See
+[`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for common setup and local
+permission failures, and [`docs/RELEASE.md`](docs/RELEASE.md) for the
+pre-publication candidate checklist. The checklist does not publish a GitHub
+Release automatically.
+
 ## v0.1: local audio acquisition
 
 The first milestone provides a small Python CLI that normalizes one YouTube URL

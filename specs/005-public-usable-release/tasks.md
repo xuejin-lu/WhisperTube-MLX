@@ -15,8 +15,8 @@ description: "Task list for the v1.0 public usable release"
 
 **Purpose**: Establish the release artifact surface without changing the approved pipeline.
 
-- [ ] T001 Create the release script directory and executable-file placeholders at `scripts/setup_macos.sh` and `scripts/launch_macos.sh`.
-- [ ] T002 [P] Add the v1.0 metadata file `VERSION` and document the feature-owned release files in `specs/005-public-usable-release/plan.md`.
+- [x] T001 Create the release script directory and executable-file placeholders at `scripts/setup_macos.sh` and `scripts/launch_macos.sh`.
+- [x] T002 [P] Add the v1.0 metadata file `VERSION` and document the feature-owned release files in `specs/005-public-usable-release/plan.md`.
 
 ---
 
@@ -26,9 +26,9 @@ description: "Task list for the v1.0 public usable release"
 
 **⚠️ CRITICAL**: Tests in this phase must fail for the expected missing-behavior reason before implementation tasks begin.
 
-- [ ] T003 [P] Add RED tests for version consistency, `--version`, supported/unsupported host facts, and stable diagnostic codes in `tests/test_release.py`.
-- [ ] T004 [P] Add RED tests for approved local paths, non-destructive configuration, model defaults, and loopback-only release configuration in `tests/test_release.py`.
-- [ ] T005 [P] Add RED artifact-safety tests for tracked/release files and machine-specific paths in `tests/test_release_artifacts.py`.
+- [x] T003 [P] Add RED tests for version consistency, `--version`, supported/unsupported host facts, and stable diagnostic codes in `tests/test_release.py`.
+- [x] T004 [P] Add RED tests for approved local paths, non-destructive configuration, model defaults, and loopback-only release configuration in `tests/test_release.py`.
+- [x] T005 [P] Add RED artifact-safety tests for tracked/release files and machine-specific paths in `tests/test_release_artifacts.py`.
 
 **Checkpoint**: The release-path tests fail only because the v1.0 release module/scripts/docs are not implemented.
 
@@ -42,12 +42,12 @@ description: "Task list for the v1.0 public usable release"
 
 ### Implementation for User Story 1
 
-- [ ] T006 [US1] Implement version loading, release configuration, host prerequisite checks, stable diagnostic codes, and `python -m whispertube.release --version/--check` in `whispertube/version.py` and `whispertube/release.py`.
-- [ ] T007 [US1] Make the RED unit tests from `tests/test_release.py` pass for version, host, path, model, and loopback contracts; record GREEN evidence before refactoring.
-- [ ] T008 [US1] Implement idempotent non-destructive setup and prerequisite failure handling in `scripts/setup_macos.sh`, using only the project `.venv` and tracked requirement files.
-- [ ] T009 [US1] Implement prepared-environment validation and local GUI delegation in `scripts/launch_macos.sh`, preserving caller arguments and rejecting missing setup.
-- [ ] T010 [US1] Add script-level deterministic tests or safe shell fakes in `tests/test_release.py` for setup reruns, missing `ffmpeg`, missing `.venv`, paths with spaces, and absence of `--share`/non-loopback launch options.
-- [ ] T011 [US1] Refactor release diagnostics and shell quoting only after focused release tests remain green.
+- [x] T006 [US1] Implement version loading, release configuration, host prerequisite checks, stable diagnostic codes, and `python -m whispertube.release --version/--check` in `whispertube/version.py` and `whispertube/release.py`.
+- [x] T007 [US1] Make the RED unit tests from `tests/test_release.py` pass for version, host, path, model, and loopback contracts; record GREEN evidence before refactoring.
+- [x] T008 [US1] Implement idempotent non-destructive setup and prerequisite failure handling in `scripts/setup_macos.sh`, using only the project `.venv` and tracked requirement files.
+- [x] T009 [US1] Implement prepared-environment validation and local GUI delegation in `scripts/launch_macos.sh`, preserving caller arguments and rejecting missing setup.
+- [x] T010 [US1] Add script-level deterministic tests or safe shell fakes in `tests/test_release.py` for setup reruns, missing `ffmpeg`, missing `.venv`, paths with spaces, and absence of `--share`/non-loopback launch options.
+- [x] T011 [US1] Refactor release diagnostics and shell quoting only after focused release tests remain green.
 
 **Checkpoint**: User Story 1 is independently usable and testable without a model download.
 
@@ -61,14 +61,14 @@ description: "Task list for the v1.0 public usable release"
 
 ### Tests for User Story 2
 
-- [ ] T012 [P] [US2] Add RED tests asserting the documented default model, explicit smoke-model example, output roots, and loopback/privacy settings in `tests/test_release.py`.
-- [ ] T013 [P] [US2] Extend deterministic GUI regression assertions in `tests/test_gui.py` only where the v1.0 launch/configuration contract requires a preserved v0.4 boundary.
+- [x] T012 [P] [US2] Add RED tests asserting the documented default model, explicit smoke-model example, output roots, and loopback/privacy settings in `tests/test_release.py`.
+- [x] T013 [P] [US2] Review existing deterministic GUI regression assertions in `tests/test_gui.py` against the v1.0 launch/configuration contract; no v0.4 boundary change was required.
 
 ### Implementation for User Story 2
 
-- [ ] T014 [US2] Update `README.md` with clean-release setup, launch, default/smoke model, first-use cache, local artifact, cleanup, and troubleshooting instructions without changing the approved workflow semantics.
-- [ ] T015 [US2] Add v1.0 release-path examples and privacy/cleanup boundaries to `specs/005-public-usable-release/quickstart.md` and keep them consistent with `README.md`.
-- [ ] T016 [US2] Make the User Story 2 RED tests pass and run the focused GUI/pipeline/release tests to confirm no public share, telemetry, broad file serving, or cleanup regression.
+- [x] T014 [US2] Update `README.md` with clean-release setup, launch, default/smoke model, first-use cache, local artifact, cleanup, and troubleshooting instructions without changing the approved workflow semantics.
+- [x] T015 [US2] Add v1.0 release-path examples and privacy/cleanup boundaries to `specs/005-public-usable-release/quickstart.md` and keep them consistent with `README.md`.
+- [x] T016 [US2] Make the User Story 2 RED tests pass and run the focused GUI/pipeline/release tests to confirm no public share, telemetry, broad file serving, or cleanup regression.
 
 **Checkpoint**: User Story 2 remains independently testable using the existing pipeline/GUI and the v1.0 release instructions.
 
@@ -82,15 +82,15 @@ description: "Task list for the v1.0 public usable release"
 
 ### Tests for User Story 3
 
-- [ ] T017 [P] [US3] Add RED tests for troubleshooting category coverage, version/release-plan consistency, and no-publication wording in `tests/test_release_artifacts.py`.
-- [ ] T018 [P] [US3] Add RED tests for safe cleanup guidance that distinguishes `.venv`/runtime roots from transcripts, cookies, credentials, and model caches in `tests/test_release.py`.
+- [x] T017 [P] [US3] Add RED tests for troubleshooting category coverage, version/release-plan consistency, and no-publication wording in `tests/test_release_artifacts.py`.
+- [x] T018 [P] [US3] Add RED tests for safe cleanup guidance that distinguishes `.venv`/runtime roots from transcripts, cookies, credentials, and model caches in `tests/test_release_artifacts.py`.
 
 ### Implementation for User Story 3
 
-- [ ] T019 [P] [US3] Add actionable prerequisite, dependency, model-cache, yt-dlp, browser-cookie, Keychain/macOS-permission, decoder, output-path, and permission guidance in `docs/TROUBLESHOOTING.md`.
-- [ ] T020 [P] [US3] Add versioned tag/release-notes/evidence/artifact-inspection/withdrawal checklist and explicit final-approval boundary in `docs/RELEASE.md`.
-- [ ] T021 [US3] Implement the artifact-safety scan exercised by `tests/test_release_artifacts.py` without reading or exporting private runtime data.
-- [ ] T022 [US3] Make the User Story 3 RED tests pass, then refactor documentation and diagnostics while the focused suite stays green.
+- [x] T019 [P] [US3] Add actionable prerequisite, dependency, model-cache, yt-dlp, browser-cookie, Keychain/macOS-permission, decoder, output-path, and permission guidance in `docs/TROUBLESHOOTING.md`.
+- [x] T020 [P] [US3] Add versioned tag/release-notes/evidence/artifact-inspection/withdrawal checklist and explicit final-approval boundary in `docs/RELEASE.md`.
+- [x] T021 [US3] Implement the artifact-safety scan exercised by `tests/test_release_artifacts.py` without reading or exporting private runtime data.
+- [x] T022 [US3] Make the User Story 3 RED tests pass, then refactor documentation and diagnostics while the focused suite stays green.
 
 **Checkpoint**: User Story 3 is independently reviewable and does not publish a GitHub Release.
 
@@ -100,12 +100,12 @@ description: "Task list for the v1.0 public usable release"
 
 **Purpose**: Verify the candidate against the spec, preserve status evidence, and prepare the coherent review handoff.
 
-- [ ] T023 [P] Update `docs/STATUS.md` with v1.0 implementation state, verified deterministic facts, smoke/CI evidence, unresolved risks, and exact review state.
-- [ ] T024 [P] Run artifact inspection over tracked files and candidate source contents; remove only newly introduced release-scope runtime/private artifacts if any are found, never existing user work.
-- [ ] T025 Run the full deterministic suite with `python -m unittest discover -s tests -v`, whitespace checks, and any available local lint/static checks; record results in `docs/STATUS.md`.
-- [ ] T026 Run the local Apple Silicon setup/launch and approved public-video `mlx-community/whisper-tiny` smoke when technically available; verify Markdown output, cleanup, loopback-only behavior, and no public share URL.
-- [ ] T027 Run `$speckit-converge` for `specs/005-public-usable-release/`, append any genuinely remaining tasks to `tasks.md`, and repeat implementation if convergence adds work.
-- [ ] T028 Commit the coherent v1.0 implementation and documentation changes, push the current branch, and record the commit/CI state in `docs/STATUS.md` without publishing a GitHub Release.
+- [x] T023 [P] Update `docs/STATUS.md` with v1.0 implementation state, verified deterministic facts, smoke/CI evidence, unresolved risks, and exact review state.
+- [x] T024 [P] Run artifact inspection over tracked files and candidate source contents; remove only newly introduced release-scope runtime/private artifacts if any are found, never existing user work.
+- [x] T025 Run the full deterministic suite with `python -m unittest discover -s tests -v`, whitespace checks, and any available local lint/static checks; record results in `docs/STATUS.md`.
+- [x] T026 Run the local Apple Silicon setup/launch and approved public-video `mlx-community/whisper-tiny` smoke when technically available; verify Markdown output, cleanup, loopback-only behavior, and no public share URL.
+- [x] T027 Run `$speckit-converge` for `specs/005-public-usable-release/`, append any genuinely remaining tasks to `tasks.md`, and repeat implementation if convergence adds work; convergence found no remaining tasks.
+- [x] T028 Commit the coherent v1.0 implementation and documentation changes, push the current branch, and record the commit/CI state in `docs/STATUS.md` without publishing a GitHub Release.
 
 ---
 

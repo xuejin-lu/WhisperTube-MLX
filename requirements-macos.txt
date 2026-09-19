@@ -1,5 +1,6 @@
-# Local-only v0.2 inference dependencies for macOS Apple Silicon.
+# Local-only v1.0 runtime dependencies for macOS Apple Silicon.
 # CI intentionally does not install this file or download model weights.
 # Install the system decoder separately with: brew install ffmpeg
 mlx-whisper==0.4.3
 OpenCC==1.4.2
+yt-dlp==2026.08.19

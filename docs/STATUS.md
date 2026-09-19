@@ -120,6 +120,40 @@ Codex should autonomously:
 - Prefer the smallest distribution approach that is reproducible and understandable over packaging complexity for its own sake.
 - Release publication is a separate final approval action, not an automatic consequence of code completion.
 
+## v1.0 implementation state
+
+**Candidate version**: `1.0.0` — implementation in progress; GitHub Release not published.
+
+The pre-implementation Agent Reviewer Phase is complete for `specs/005-public-usable-release/`:
+
+- requirements checklist: 13/13 reviewed;
+- security checklist: 15/15 reviewed;
+- CHK012 requirements defect was fixed before marking it `[x]`: browser login/cookie, Keychain, and macOS privacy prompts are explicit user-owned gates that release paths must not bypass or capture;
+- migration artifacts were protected in commit `ff94b9d` (`docs: define v1.0 public release workflow`) and rebased onto `origin/main`.
+
+Verified locally so far:
+
+- native Apple Silicon prerequisite diagnostic passes with Python 3.13, macOS 14+, `ffmpeg`, and `yt-dlp`;
+- setup completed from the new script and a second setup run reused all pinned dependencies without destructive cleanup;
+- deterministic release-focused tests pass 12/12;
+- the full deterministic suite passes 70/70 under the v1.0 environment;
+- the launcher served the GUI at `127.0.0.1` with HTTP 200 and was stopped cleanly without a public share URL;
+- the approved public test video completed with explicit `mlx-community/whisper-tiny`, producing a 33,924-byte UTF-8 Markdown transcript and leaving the current-run audio directory empty;
+- artifact inspection found no tracked private/runtime artifact; the smoke transcript and audio remain under ignored `temp/` paths.
+
+Remaining candidate work before review-ready handoff:
+
+- Spec Kit converge is complete with no remaining tasks appended;
+- run final artifact inspection over the staged candidate contents and CI after push;
+- keep full large-v3 performance unmeasured, Safari cookie fallback unexercised, and the yt-dlp JavaScript-runtime warning documented as risks;
+- do not publish the actual GitHub Release until repository review explicitly approves the candidate.
+
+## Spec Kit convergence
+
+**CONVERGED on 2026-09-19.**
+
+The v1.0 implementation satisfies the active spec, plan, tasks, and constitution within the selected source-release scope. No convergence tasks were appended. The remaining items are review/publication gates or explicitly documented risks, not unbuilt feature work.
+
 ## Known follow-up risks
 
 - Safari browser-cookie fallback remains unexercised because anonymous YouTube acquisition has succeeded in testing.
