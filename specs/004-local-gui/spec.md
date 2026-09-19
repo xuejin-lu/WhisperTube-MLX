@@ -98,6 +98,9 @@ content and downloadable artifact metadata match that fixture byte-for-byte.
   Markdown preview, and a download/save action for that same artifact.
 - **FR-006**: Preview/download MUST accept only a non-empty `.md` regular file resolved within the
   configured approved transcript output root; arbitrary or pre-existing unrelated files MUST not be exposed.
+  Framework-level file serving MUST NOT whitelist the whole transcript directory (or any parent directory)
+  when that would make unrelated files directly addressable; only the validated result artifact (or a safe
+  framework cache copy of that validated artifact) may become downloadable.
 - **FR-007**: Starting a new run or reporting failure MUST clear stale transcript preview and download state.
 - **FR-008**: Pipeline failures MUST retain their approved category and actionable message; unexpected
   failures MUST be reported as an application error without a traceback or sensitive local data.
@@ -136,7 +139,8 @@ content and downloadable artifact metadata match that fixture byte-for-byte.
 - **SC-003**: 100% of successful deterministic result tests show preview text and downloadable bytes that
   exactly match the generated Markdown artifact.
 - **SC-004**: 100% of disallowed, missing, unreadable, empty, non-UTF-8, or non-Markdown result fixtures
-  are rejected without exposing an arbitrary local file.
+  are rejected without exposing an arbitrary local file, including through the framework's direct file-serving
+  route rather than only through the GUI callback.
 - **SC-005**: Deterministic launch tests prove loopback-only binding, no public share/tunnel, no telemetry,
   and no monitoring endpoint.
 - **SC-006**: The full deterministic repository suite completes without live YouTube, browser credentials,
