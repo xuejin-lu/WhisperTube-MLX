@@ -83,12 +83,42 @@ v0.4 Local Graphical UI is implemented with:
   preview/download, showed no public share URL, and left the current-run audio directory empty;
 - GitHub Actions passing for implementation commit `3c92fd5` in run `35404368636`.
 
-No v0.4 implementation blocker or Human Gate remains. Reviewer approval is still required before the milestone is closed.
+## Review findings
+
+v0.4 is **not yet approved for closure**. Repository review found one file-exposure boundary defect:
+
+1. **The entire transcript directory is currently exposed through Gradio `allowed_paths`.** `launch_app()`
+   passes the resolved transcript root directory to `allowed_paths`. Current Gradio documentation explicitly
+   states that if an `allowed_paths` entry is a directory, every file in that directory and its subdirectories
+   is directly accessible to users of the running app. This bypasses the callback-level checks that reject
+   non-Markdown, empty, invalid-UTF-8, or otherwise unrelated pre-existing files, and conflicts with FR-006 /
+   the security checklist's local-file boundary.
+
+Official reference used for this review:
+https://www.gradio.app/guides/file-access
+
+The existing validated `gr.File` output can rely on Gradio's controlled output/cache path behavior rather than
+whitelisting the whole output directory. The fix must be verified against the pinned Gradio version rather than
+assuming framework behavior.
+
+## Current blocker
+
+The broad `allowed_paths` directory exposure blocks v0.4 approval. It is deterministic and requires no Human Gate.
 
 ## Next autonomous task
 
-Review v0.4 against `specs/004-local-gui/`, the completed checklists, local smoke evidence, and exact-SHA CI.
-Do not start v0.5 until v0.4 is explicitly approved or review findings are remediated and reverified.
+Run a focused v0.4 Spec Kit convergence pass for the file-serving finding:
+
+- add a RED regression test proving launch does not whitelist the entire transcript directory;
+- add an integration/security test (using the pinned Gradio version) proving an unrelated pre-existing file
+  under the transcript root cannot be fetched through Gradio's direct file route;
+- preserve successful download of the one validated Markdown result (using Gradio's safe output/cache behavior
+  or another exact-artifact mechanism);
+- remove or narrow the broad `allowed_paths` configuration without weakening loopback/share/API/CORS controls;
+- rerun focused GUI tests, full deterministic suite, local browser smoke, CI, and `$speckit-converge`;
+- persist the remediation and request review again.
+
+Do not start v0.5 until v0.4 is approved.
 
 ## v0.4 scope constraints
 
