@@ -235,3 +235,36 @@ Run a focused v1.0 Spec Kit convergence pass:
 - keep the GitHub Release unpublished and request repository review again.
 
 Do not create tag `v1.0.0` or publish the GitHub Release until this finding is closed and the candidate is explicitly approved.
+
+
+## v1.0 release-candidate approval
+
+**APPROVED FOR PUBLICATION on 2026-09-19.**
+
+Repository review verified the clean-path remediation and final candidate state:
+
+- `scripts/launch_macos.sh` prepends the project `.venv/bin` to `PATH`, so the pinned project-owned `yt-dlp` is discoverable without any global yt-dlp installation;
+- deterministic shell/runtime coverage exercises a clean PATH, a project path containing spaces, launcher argument preservation, missing `.venv`, failed prerequisites, and setup rerun safety;
+- the four new clean-path regression tests pass 4/4, the focused release module passes 11/11, and the full deterministic suite passes 74/74;
+- a clean-PATH local GUI verification served loopback-only HTTP 200 with no public share URL;
+- a real Apple Silicon clean-PATH smoke using the approved public video and `mlx-community/whisper-tiny` produced a 34,175-byte UTF-8 Markdown transcript and left current-run audio empty;
+- artifact/privacy inspection is complete and the release checklist is fully satisfied except for the intentionally separate publication checkbox;
+- latest HEAD `5013bb4` passed GitHub Actions run `35440917903`;
+- GitHub Releases are still empty and no tag exists under `refs/tags/`, so no publication occurred before approval.
+
+No implementation blocker or Human Gate remains for the reviewed source-release candidate.
+
+## v1.0 publication gate
+
+The reviewed candidate is now authorized for the separate publication action, but publication has **not** been performed by repository review.
+
+The next autonomous task, only after the maintainer starts it, is:
+
+1. synchronize to the approved candidate state;
+2. create immutable tag `v1.0.0` at the reviewed release snapshot (including this approval handoff as appropriate to the documented publication procedure);
+3. create the GitHub Release using the reviewed release notes and GitHub-generated source archives only;
+4. do not attach model weights, credentials, media, transcripts, cookies, browser profiles, or runtime caches;
+5. verify the published tag/release points to the intended reviewed commit and that source assets are present;
+6. mark the publication checkbox in `docs/RELEASE.md`, update this status with the exact tag/release URL and final verification state, commit/push any post-publication documentation update, and request one final publication verification review.
+
+Do not add new product features during publication.
