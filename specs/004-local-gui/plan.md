@@ -39,8 +39,9 @@ or pipeline reimplementation; preserve v0.1-v0.3 cleanup and errors
 - PASS — one small local interface slice; packaging, cloud hosting, accounts, and richer features remain out of scope.
 - PASS — real browser and Apple Silicon smoke evidence is required before review.
 
-Post-design re-check: PASS. File exposure is bounded to validated Markdown under the configured transcript
-root, event API exposure is disabled, the server binds to `127.0.0.1`, and no constitution exception is needed.
+Post-design re-check: PASS. Only validated Markdown copied into Gradio's controlled cache becomes downloadable;
+the transcript directory is not broadly whitelisted, event API exposure is disabled, the server binds to
+`127.0.0.1`, and no constitution exception is needed.
 
 ## Project Structure
 

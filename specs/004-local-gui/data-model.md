@@ -45,4 +45,6 @@ Entering `running` clears stale preview and download state.
 - monitoring disabled
 - strict CORS enabled
 - one active queued event
-- approved transcript root is the only allowed file-serving path
+- no transcript directory or parent is added to framework `allowed_paths`
+- ambient `GRADIO_ALLOWED_PATHS` overrides are rejected
+- only a validated transcript copied into Gradio's controlled cache is downloadable

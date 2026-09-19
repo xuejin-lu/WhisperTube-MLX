@@ -205,7 +205,9 @@ def launch_app(
 ):
     """Launch a Blocks app with explicit local-only privacy settings."""
 
-    transcript_root = _approved_transcript_root(output_dir, create=True)
+    if os.environ.get("GRADIO_ALLOWED_PATHS"):
+        raise ValueError("GRADIO_ALLOWED_PATHS must be unset for the local GUI")
+    _approved_transcript_root(output_dir, create=True)
     return app.launch(
         server_name=LOCAL_SERVER_NAME,
         server_port=port,
@@ -214,7 +216,6 @@ def launch_app(
         show_error=False,
         enable_monitoring=False,
         strict_cors=True,
-        allowed_paths=[str(transcript_root.resolve())],
         footer_links=[],
     )
 

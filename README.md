@@ -108,8 +108,9 @@ download. It reuses the v0.3 pipeline and preserves its cause-specific errors.
 The server binds explicitly to `127.0.0.1`; public sharing, framework
 analytics, monitoring, and direct queue bypass are disabled. Only validated
 non-empty UTF-8 Markdown below the configured ignored transcript directory can
-be previewed or downloaded. No public tunnel, hosted processing, telemetry,
-account, or database is used.
+be previewed or copied into Gradio's controlled cache for download; the
+transcript directory itself is not exposed as an allowed file-serving path. No
+public tunnel, hosted processing, telemetry, account, or database is used.
 
 For a constrained local smoke test, select the small model at launch without
 changing the normal large-v3 quality target:

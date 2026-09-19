@@ -43,10 +43,13 @@ behavior to framework objects and weakens deterministic testing.
 ## Decision 4: Bound file serving to validated transcripts
 
 **Decision**: Return a file output only after validating a non-empty regular `.md` file under the configured
-transcript root. Allow Gradio access only to that root, never to arbitrary user input or the repository root.
+transcript root. Do not add the transcript root to `allowed_paths`; let pinned Gradio copy the validated result
+into its controlled cache, and reject ambient `GRADIO_ALLOWED_PATHS` overrides.
 
-**Rationale**: Official Gradio file-access guidance warns against passing arbitrary input as a file output and
-recommends minimal allowed paths. This preserves v0.3 output boundaries while enabling local download.
+**Rationale**: Official Gradio file-access guidance states that a directory in `allowed_paths` exposes every file
+under it, while a callback-returned file in the system temp directory is copied into Gradio's cache. Avoiding the
+directory allowlist preserves v0.3 output boundaries while keeping the validated result downloadable.
 
-**Alternatives considered**: Serving arbitrary paths or broad repository directories was rejected as an
-unnecessary local-file disclosure risk.
+**Alternatives considered**: Serving the transcript root, arbitrary paths, or broad repository directories was
+rejected as an unnecessary local-file disclosure risk. An exact launch-time artifact allowlist is unavailable
+because the result does not exist until after the callback completes.

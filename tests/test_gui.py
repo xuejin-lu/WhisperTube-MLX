@@ -1,6 +1,9 @@
+import asyncio
+import os
 import tempfile
 import unittest
 from pathlib import Path
+from urllib.parse import quote
 from unittest.mock import Mock, patch
 
 from whispertube.gui import begin_run, build_app, execute_pipeline_request, launch_app, run_gui_request
@@ -129,7 +132,6 @@ class GUITests(unittest.TestCase):
                 show_error=False,
                 enable_monitoring=False,
                 strict_cors=True,
-                allowed_paths=[str(output_root.resolve())],
                 footer_links=[],
             )
 
@@ -144,6 +146,57 @@ class GUITests(unittest.TestCase):
             launch_app(app, output_dir=Path.cwd() / "private-transcripts", inbrowser=False)
 
         app.launch.assert_not_called()
+
+    def test_launch_rejects_ambient_allowed_paths_override(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "transcripts"
+            app = Mock()
+
+            with patch.dict(os.environ, {"GRADIO_ALLOWED_PATHS": str(output_root)}):
+                with self.assertRaisesRegex(ValueError, "GRADIO_ALLOWED_PATHS"):
+                    launch_app(app, output_dir=output_root, inbrowser=False)
+
+            app.launch.assert_not_called()
+
+    def test_direct_file_route_denies_unrelated_root_file_and_serves_validated_result(self) -> None:
+        from fastapi.testclient import TestClient
+        from gradio.routes import App
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "transcripts"
+            output_root.mkdir()
+            transcript = output_root / "result.md"
+            transcript_bytes = b"# Transcript\n\nvalidated output\n"
+            transcript.write_bytes(transcript_bytes)
+            unrelated = output_root / "unrelated.txt"
+            unrelated.write_text("must remain private", encoding="utf-8")
+
+            app = build_app(
+                output_dir=output_root,
+                pipeline=Mock(return_value=transcript),
+            )
+            self.addCleanup(app.close)
+
+            def configure_test_app(**launch_options):
+                app.allowed_paths = launch_options.get("allowed_paths") or []
+                app.blocked_paths = launch_options.get("blocked_paths") or []
+                app.has_launched = True
+
+            with patch.object(app, "launch", side_effect=configure_test_app):
+                launch_app(app, output_dir=output_root, inbrowser=False)
+
+            result = asyncio.run(app.process_api(1, ["https://youtu.be/gmj41fQTbfY"]))
+            cached_url = result["data"][2]["url"]
+            route_app = App.create_app(app)
+
+            with TestClient(route_app) as client:
+                unrelated_url = f"/gradio_api/file={quote(str(unrelated), safe='/')}"
+                denied = client.get(unrelated_url)
+                downloaded = client.get(cached_url)
+
+            self.assertEqual(denied.status_code, 403)
+            self.assertEqual(downloaded.status_code, 200)
+            self.assertEqual(downloaded.content, transcript_bytes)
 
     def test_valid_markdown_preview_and_download_match_artifact_bytes(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

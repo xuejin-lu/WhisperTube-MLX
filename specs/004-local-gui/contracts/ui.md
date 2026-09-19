@@ -35,5 +35,6 @@ The process opens or serves one loopback-only browser interface. It never enable
 - analytics: disabled;
 - monitoring endpoint: disabled;
 - direct event API bypass: disabled and event visibility private;
-- file access: configured transcript root only, with callback-level path/type/content validation;
+- file access: no transcript directory allowlist; callback-level path/type/content validation precedes a
+  framework cache copy of the one downloadable result, and ambient `GRADIO_ALLOWED_PATHS` is rejected;
 - no uploads, credentials, hosted inference, accounts, database, or telemetry.
