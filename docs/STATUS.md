@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-**v0.4 — Local graphical UI**
+**v1.0 — Public usable release**
 
 ## v0.1 approval
 
@@ -56,75 +56,69 @@ v0.3 End-to-end CLI pipeline is closed after reviewer verification of:
 
 No v0.3 implementation blocker or Human Gate remains.
 
+## v0.4 approval
+
+**APPROVED on 2026-09-19.**
+
+v0.4 Local Graphical UI is closed after reviewer verification of:
+
+- Spec Kit convergence complete through T022;
+- requirements checklist 13/13, security checklist 10/10, and UX checklist 10/10 reviewed;
+- a pinned Gradio 6.27.0 Blocks interface delegates one request to the approved v0.3 pipeline;
+- loopback-only binding, no public share, private event APIs, strict CORS, disabled analytics/monitoring, and one-active-job behavior are enforced;
+- visible idle/running/success/error states, cause-specific pipeline errors, full Markdown preview, and local download are implemented;
+- transcript results are validated for root, suffix, file type, readability, UTF-8, and non-empty content before GUI exposure;
+- the broad transcript-directory `allowed_paths` exposure was removed;
+- ambient `GRADIO_ALLOWED_PATHS` is rejected so environment configuration cannot silently re-enable broad file serving;
+- pinned-Gradio integration tests prove an unrelated pre-existing transcript-root file returns HTTP 403 while the validated Markdown result is served from Gradio's controlled cache with HTTP 200 and byte-identical content;
+- focused GUI tests pass 12/12 and the full deterministic suite passes 58/58;
+- a real local browser smoke produced, previewed, and downloaded the validated transcript, denied the unrelated file route, showed no public share URL, and left the current-run audio directory empty;
+- GitHub Actions passed for remediation commit `44371d6` in run `35420386201`;
+- GitHub Actions passed for final handoff commit `03fb16d` in run `35420473704`.
+
+No v0.4 implementation blocker or Human Gate remains.
+
 ## Current milestone goal
 
-v0.4 adds the first local graphical interface for non-technical use while reusing the approved v0.3 pipeline:
+v1.0 turns the approved local pipeline and GUI into a public, reasonably installable release for other Apple Silicon Mac users.
 
-`open local app -> paste one YouTube URL -> Transcribe -> view status/preview -> save/download Markdown`
+The target user journey is:
 
-The GUI must remain a thin presentation layer over the approved pipeline rather than reimplementing acquisition or transcription.
+`obtain release -> install/setup prerequisites -> launch locally -> paste URL -> Transcribe -> save Markdown`
 
-## v0.4 implementation review
-
-**READY FOR REVIEW on 2026-09-19.**
-
-v0.4 Local Graphical UI is implemented with:
-
-- Spec Kit convergence complete through T022 with all 22 tasks checked;
-- requirements checklist 13/13, security checklist 10/10, and UX checklist 10/10 reviewed;
-- a pinned Gradio 6.27.0 Blocks interface that delegates exactly one request to the approved v0.3 pipeline;
-- explicit loopback binding, no public share, private event APIs, strict CORS, disabled analytics/monitoring,
-  and bounded transcript-file exposure;
-- visible idle/running/success/error states, duplicate-run suppression, cause-specific pipeline errors,
-  complete Markdown preview, and local Markdown download;
-- focused GUI coverage passing 12 tests and the full deterministic repository suite passing 58 tests;
-- a real local browser smoke using the approved public video and `mlx-community/whisper-tiny` that showed
-  running/disabled and terminal/restored controls, produced a 33,577-byte Markdown transcript, exposed its
-  preview/download, showed no public share URL, and left the current-run audio directory empty;
-- GitHub Actions passing for implementation commit `3c92fd5` in run `35404368636`.
-
-## Review finding remediation
-
-**REMEDIATED — REVIEW REQUESTED on 2026-09-19.**
-
-The broad transcript-directory `allowed_paths` finding has been resolved:
-
-- `launch_app()` no longer passes the transcript root or any parent directory to `allowed_paths`;
-- non-empty ambient `GRADIO_ALLOWED_PATHS` is rejected before server launch so environment configuration
-  cannot silently restore the exposure;
-- pinned-Gradio integration coverage proves an unrelated pre-existing transcript-root file receives HTTP 403;
-- the same integration coverage proves a validated Markdown result is copied into Gradio's controlled cache,
-  remains downloadable with HTTP 200, and preserves its exact bytes;
-- the real loopback browser smoke independently denied the pre-existing `unrelated.txt` route with HTTP 403,
-  then produced, previewed, and downloaded a 33,603-byte validated transcript through the cache route with
-  HTTP 200 while leaving the current-run audio directory empty;
-- focused GUI tests pass 12/12, the full deterministic suite passes 58/58, `compileall` passes, and
-  `git diff --check` passes;
-- GitHub Actions passed for remediation commit `44371d6` in run `35420386201`.
-
-Official reference used for this review:
-https://www.gradio.app/guides/file-access
-
-The remediation was verified against the pinned Gradio 6.27.0 implementation rather than inferred from
-framework documentation alone.
-
-## Current blocker
-
-None. No Human Gate remains. Reviewer approval is still required before v0.4 is closed.
+The release must preserve all approved v0.1-v0.4 privacy, cleanup, error, and local-file boundaries.
 
 ## Next autonomous task
 
-Review remediation commit `44371d6`, its deterministic/security tests, local smoke evidence, and exact-SHA CI.
-Do not start v0.5 until v0.4 is explicitly approved or new review findings are remediated and reverified.
+Use the Spec Kit lifecycle to create the v1.0 **Public Usable Release** feature before implementation.
 
-## v0.4 scope constraints
+Codex should autonomously:
 
-- Local GUI only; do not create a public share/tunnel by default.
-- No hosted transcription or paid API fallback.
-- No summarization, diarization, timestamps, playlist batch mode, accounts, database, or telemetry.
-- Do not package a final macOS `.app` yet unless the v0.4 spec explicitly proves it is necessary; public packaging remains part of the later release milestone.
-- Preserve the `large-v3` default quality target while allowing a smaller explicit model for local smoke/testing.
-- Do not weaken the approved v0.1-v0.3 path, cleanup, privacy, or error contracts.
+1. research the simplest maintainable installation/distribution approach for Apple Silicon macOS rather than assuming a packaging tool;
+2. decide through the spec whether v1.0 should ship as:
+   - a reproducible setup/launch script,
+   - a packaged macOS app,
+   - or both;
+3. explicitly account for Python/runtime dependencies, `yt-dlp`, `ffmpeg`, MLX/Whisper/OpenCC, Gradio, model download/cache behavior, and Apple Silicon compatibility;
+4. define acceptance criteria for a clean-machine or clean-environment installation path, launch path, uninstall/cleanup expectations, and troubleshooting;
+5. keep all processing local and preserve the approved loopback-only GUI and file-serving boundaries;
+6. add release/version metadata and a versioned GitHub Release plan without publishing a release before acceptance criteria converge;
+7. improve README/setup/troubleshooting so another Apple Silicon Mac user can follow it without repository-specific knowledge;
+8. add deterministic installer/launcher/config tests where practical and keep CI independent of Apple Silicon-only MLX execution;
+9. perform real Apple Silicon release-path smoke verification using the approved public test video and an explicit small MLX model;
+10. inspect the repository/release artifacts for credentials, media, private transcripts, model caches, and accidental local paths before publication;
+11. run full tests, CI, `$speckit-converge`, push, and persist the review handoff in GitHub;
+12. do **not** create/publish the actual GitHub Release until the v1.0 release candidate is explicitly approved by repository review.
+
+## v1.0 scope constraints
+
+- Apple Silicon macOS only for the initial public release.
+- No hosted transcription, public tunnel, paid API fallback, accounts, database, or telemetry.
+- No playlist batch transcription, summarization, diarization, or timestamps.
+- Do not weaken the approved v0.1-v0.4 pipeline, cleanup, privacy, error, or file-serving contracts.
+- Preserve `large-v3` as the normal quality target while allowing a smaller explicit model for validation.
+- Prefer the smallest distribution approach that is reproducible and understandable over packaging complexity for its own sake.
+- Release publication is a separate final approval action, not an automatic consequence of code completion.
 
 ## Known follow-up risks
 
@@ -132,3 +126,4 @@ Do not start v0.5 until v0.4 is explicitly approved or new review findings are r
 - yt-dlp has emitted a missing JavaScript-runtime warning on tested downloads, although the approved test video succeeds.
 - full large-v3 runtime cost and memory use remain unmeasured.
 - Gradio is pinned at 6.27.0; future framework upgrades require rerunning the launch/privacy contract tests and browser smoke.
+- macOS distribution/signing/notarization requirements have not yet been selected; v1.0 research must determine whether they are necessary for the chosen distribution path.
