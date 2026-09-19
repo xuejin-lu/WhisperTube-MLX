@@ -268,3 +268,16 @@ The next autonomous task, only after the maintainer starts it, is:
 6. mark the publication checkbox in `docs/RELEASE.md`, update this status with the exact tag/release URL and final verification state, commit/push any post-publication documentation update, and request one final publication verification review.
 
 Do not add new product features during publication.
+
+## v1.0 publication verification
+
+**PUBLISHED on 2026-09-19 after explicit maintainer authorization.**
+
+- Immutable tag `v1.0.0` points to the approved release snapshot
+  `b89298016a67905ad9b5685ebf79e110f8a788cb`.
+- GitHub Release: https://github.com/xuejin-lu/WhisperTube-MLX/releases/tag/v1.0.0
+- The Release was created as a non-draft, non-prerelease release with GitHub-generated source archives only;
+  no extra assets were attached.
+- `docs/RELEASE.md` publication checkbox is complete, and the repository remains free of credentials, cookies,
+  browser profiles, media, transcripts, model weights, and runtime caches.
+- No product features were added during publication.

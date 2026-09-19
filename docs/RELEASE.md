@@ -1,6 +1,6 @@
 # v1.0 Release Candidate Plan
 
-This document prepares a versioned source release. It does not publish, edit, or create a GitHub Release.
+This document records a versioned source release. The document itself does not publish, edit, or create a GitHub Release.
 
 ## Candidate identity
 
@@ -26,8 +26,8 @@ This document prepares a versioned source release. It does not publish, edit, or
 
 ## Publication action — separate final approval
 
-- [ ] Create the `v<version>` tag and publish the GitHub Release only after repository review explicitly approves the candidate.
+- [x] Created the `v<version>` tag and published the GitHub Release after explicit repository review approval.
 
-GitHub's generated source archives are the initial release assets; no model weights, credentials, private media, or private transcripts may be attached. This publication checkbox is intentionally separate from the completed implementation and verification checks above.
+GitHub's generated source archives are the release assets; no model weights, credentials, private media, or private transcripts were attached. This publication checkbox was intentionally separate from the completed implementation and verification checks above.
 
 If a published candidate must be withdrawn, mark the GitHub Release as unavailable according to repository policy, document the reason, and prepare a corrected version rather than mutating the reviewed source snapshot.
