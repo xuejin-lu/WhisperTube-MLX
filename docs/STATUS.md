@@ -281,3 +281,38 @@ Do not add new product features during publication.
 - `docs/RELEASE.md` publication checkbox is complete, and the repository remains free of credentials, cookies,
   browser profiles, media, transcripts, model weights, and runtime caches.
 - No product features were added during publication.
+
+
+## v1.0 final publication review
+
+**PUBLICATION SUCCEEDED — metadata remediation required before final verification is closed.**
+
+Final repository/release verification confirmed:
+
+- annotated tag `v1.0.0` resolves to commit `b89298016a67905ad9b5685ebf79e110f8a788cb`;
+- GitHub Release `v1.0.0 — Public Usable Release` is published, non-draft, non-prerelease;
+- the Release has no manually attached assets; only GitHub-generated source archives are present;
+- post-publication documentation commit `655cc5f` records the release and no product code changed.
+
+Two release-metadata findings remain:
+
+1. **Broken public quickstart reference.** The published Release body says to see `docs/QUICKSTART.md`, but that path does not exist. The actual tracked quickstart is `specs/005-public-usable-release/quickstart.md`. Update the GitHub Release body to point to a real public instruction path (prefer README plus `docs/TROUBLESHOOTING.md`, or the actual tracked quickstart).
+2. **Unverified immutability wording.** `docs/STATUS.md` currently describes `v1.0.0` as an "Immutable tag", while GitHub reports the published release with `immutable: false`. The tag is correctly resolved and currently points to the approved snapshot, but repository state should use only verifiable wording such as "annotated tag" / "published tag" unless tag immutability is separately enforced and verified.
+
+These findings do not require rebuilding or republishing v1.0.0 and do not invalidate the reviewed source snapshot.
+
+## v1.0 final verification blocker
+
+Final publication verification remains open only for the metadata corrections above.
+
+## v1.0 next autonomous task
+
+Perform a publication-metadata-only convergence pass:
+
+- edit the existing GitHub Release `v1.0.0` body so all installation/documentation references resolve to tracked files;
+- do not change the tag target, release assets, version, source snapshot, or product code;
+- replace unverified "immutable tag" wording in repository status/release documentation with accurate verified wording, unless GitHub tag immutability is explicitly configured and proven;
+- re-fetch the published Release and annotated tag to verify the corrected body, tag target, draft/prerelease state, and empty manual asset list;
+- update `docs/STATUS.md` with the final publication verification result and request review again.
+
+Do not create a new release or version for this metadata-only correction.
