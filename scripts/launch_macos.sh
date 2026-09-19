@@ -11,4 +11,5 @@ if [[ ! -x "$VENV_PYTHON" ]]; then
 fi
 
 cd "$PROJECT_ROOT"
+export PATH="$PROJECT_ROOT/.venv/bin:$PATH"
 exec "$VENV_PYTHON" -m whispertube.gui "$@"

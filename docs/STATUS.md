@@ -187,8 +187,32 @@ tracked executable (`100755`), and latest candidate CI is green; those facts do 
 
 ## v1.0 current blocker
 
-The release cannot be approved until the documented setup + launch path works without any separately installed
-global `yt-dlp`.
+The clean-path blocker described above was resolved in the working tree by explicitly prepending the project
+`.venv/bin` to `PATH` in `scripts/launch_macos.sh`. It remains a repository-review finding until the remediation
+commit is pushed and independently reviewed; the GitHub Release remains unpublished.
+
+## v1.0 clean-path remediation
+
+**IMPLEMENTED — awaiting pushed-commit CI evidence and repository review.**
+
+The focused convergence pass completed the requested remediation:
+
+- T029 added RED runtime coverage that launches from a temporary project path with spaces, removes global `yt-dlp`
+  from `PATH`, preserves launcher arguments, and proves the project-owned `.venv/bin/yt-dlp` is discoverable.
+- T030 added execution coverage for setup reruns, failed native prerequisites, missing `.venv`, paths with spaces, and
+  launcher argument preservation.
+- T031 prepends the project `.venv/bin` to `PATH` before starting the GUI, preserving loopback-only binding and the
+  no-public-share boundary.
+- The focused release suite passes 4/4 after the expected RED failure and GREEN fix; the full deterministic suite
+  passes 74/74.
+- A clean-PATH GUI verification served `http://127.0.0.1:17861/` with HTTP 200 and no public share URL.
+- A real Apple Silicon clean-PATH pipeline smoke using the approved public video and
+  `mlx-community/whisper-tiny` produced a 34,175-byte UTF-8 Markdown transcript and left the current-run audio
+  directory empty. The PATH included the project `.venv/bin`, Homebrew `ffmpeg`, and system directories; no global
+  `yt-dlp` was required.
+
+The remaining autonomous work is to run artifact inspection, exact-SHA CI, and follow-up Spec Kit convergence after
+the remediation commit, then request repository review again. Do not create tag `v1.0.0` or publish the GitHub Release.
 
 ## v1.0 next autonomous task
 

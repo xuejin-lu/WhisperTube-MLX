@@ -139,3 +139,15 @@ description: "Task list for the v1.0 public usable release"
 3. Add US2 documentation and regression coverage without changing pipeline semantics.
 4. Add US3 troubleshooting, artifact inspection, and release planning.
 5. Run local smoke, full tests, converge, update status, commit, push, and leave actual GitHub Release publication for explicit review approval.
+
+---
+
+## Phase 7: Convergence — clean-path release remediation
+
+**Purpose**: Close the repository-review blocker where a clean user machine has no global `yt-dlp`.
+
+- [x] T029 [US1] Add RED deterministic shell/runtime tests in `tests/test_release.py` using a temporary minimal project environment and PATH without global `yt-dlp`; prove that `scripts/launch_macos.sh` preserves arguments and makes the project-owned `.venv/bin/yt-dlp` discoverable to the launched process per FR-002, US1 AC3, and SC-001 (missing).
+- [x] T030 [US1] Add RED execution tests for setup rerun safety, missing native prerequisite, missing `.venv`, paths containing spaces, and launcher argument preservation in `tests/test_release.py`; replace source-text-only assertions for T010 with fake-toolchain behavior coverage (T010, partial).
+- [x] T031 [US1] Implement the smallest safe clean-path fix in `scripts/launch_macos.sh` by explicitly prepending the project `.venv/bin` to `PATH` before launching `whispertube.gui`, without changing loopback or public-sharing boundaries (FR-002, `contracts/release.md`, partial).
+- [x] T032 [P] Update `docs/RELEASE.md` and `docs/STATUS.md` with clean-PATH test evidence, exact remediation commit/CI state, and the still-separate GitHub Release publication approval (SC-001, T010, partial).
+- [ ] T033 Run focused release tests, the full deterministic suite, clean-PATH launcher verification, real Apple Silicon small-model smoke, artifact inspection, exact-SHA CI, and a follow-up `$speckit-converge`; repeat implementation if any remaining task is found (SC-001, SC-003, SC-004, partial).
