@@ -203,8 +203,8 @@ The focused convergence pass completed the requested remediation:
   launcher argument preservation.
 - T031 prepends the project `.venv/bin` to `PATH` before starting the GUI, preserving loopback-only binding and the
   no-public-share boundary.
-- The focused release suite passes 4/4 after the expected RED failure and GREEN fix; the full deterministic suite
-  passes 74/74.
+- The four new clean-path regression tests pass 4/4 after the expected RED failure and GREEN fix; the full focused
+  release module passes 11/11 and the full deterministic suite passes 74/74.
 - A clean-PATH GUI verification served `http://127.0.0.1:17861/` with HTTP 200 and no public share URL.
 - A real Apple Silicon clean-PATH pipeline smoke using the approved public video and
   `mlx-community/whisper-tiny` produced a 34,175-byte UTF-8 Markdown transcript and left the current-run audio
