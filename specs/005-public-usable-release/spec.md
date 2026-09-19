@@ -26,8 +26,9 @@ As an Apple Silicon Mac user who has obtained the v1.0 source release, I want on
 
 1. **Given** a supported Apple Silicon Mac with a supported native Python and Homebrew available, **When** the user runs the documented setup path, **Then** an isolated project environment is created and all required Python dependencies are installed from pinned project requirements.
 2. **Given** the setup path is complete, **When** the user runs the documented launch path, **Then** the GUI binds only to the loopback address, does not create a public share, and opens or reports a local URL.
-3. **Given** a non-Apple-Silicon Mac, unsupported macOS version, non-native Python, or missing required decoder, **When** setup is attempted, **Then** the user receives an actionable prerequisite message and setup does not claim success.
-4. **Given** setup has already completed, **When** setup is run again, **Then** it is safe and repeatable without deleting user outputs, model caches, cookies, or unrelated files.
+3. **Given** the user has no globally installed `yt-dlp` executable, but setup installed the pinned project dependency into `.venv`, **When** the launched GUI acquires a YouTube video, **Then** the release path MUST still invoke the project-owned `.venv` yt-dlp successfully without depending on ambient/global PATH state.
+4. **Given** a non-Apple-Silicon Mac, unsupported macOS version, non-native Python, or missing required decoder, **When** setup is attempted, **Then** the user receives an actionable prerequisite message and setup does not claim success.
+5. **Given** setup has already completed, **When** setup is run again, **Then** it is safe and repeatable without deleting user outputs, model caches, cookies, or unrelated files.
 
 ### User Story 2 - Use the Public Release Workflow (Priority: P1)
 
@@ -78,7 +79,7 @@ As a maintainer or release user, I want version information, safe cleanup guidan
 ### Functional Requirements
 
 - **FR-001**: The release MUST state that v1.0 targets macOS on native Apple Silicon and MUST provide prerequisite checks for host architecture, supported macOS version, native Python, and the required local decoder.
-- **FR-002**: The release MUST provide one setup path that creates or reuses an isolated project environment and installs all pinned Python dependencies required by the GUI and approved local pipeline.
+- **FR-002**: The release MUST provide one setup path that creates or reuses an isolated project environment and installs all pinned Python dependencies required by the GUI and approved local pipeline. Runtime executables installed into that environment (including `yt-dlp`) MUST remain discoverable when the documented launcher runs, without requiring a separate global installation.
 - **FR-003**: Setup MUST be repeatable and MUST NOT delete or overwrite user outputs, model caches, cookies, credentials, or unrelated files.
 - **FR-004**: The release MUST provide one launch path that starts the approved GUI from the prepared environment and reports its local loopback URL.
 - **FR-005**: The release MUST fail with actionable diagnostics when a required prerequisite or dependency is missing, incompatible, or installed for the wrong CPU architecture.
@@ -108,7 +109,7 @@ As a maintainer or release user, I want version information, safe cleanup guidan
 
 ### Measurable Outcomes
 
-- **SC-001**: On a clean supported Apple Silicon environment with network access and prerequisites available, a new user following only the release documentation can complete setup and reach the local GUI without modifying source files; deterministic setup-path tests cover the documented success and prerequisite-failure branches.
+- **SC-001**: On a clean supported Apple Silicon environment with network access and prerequisites available, a new user following only the release documentation can complete setup and reach the local GUI without modifying source files; deterministic setup-path tests cover the documented success and prerequisite-failure branches, including a clean PATH with no global `yt-dlp` while the project `.venv/bin/yt-dlp` remains usable.
 - **SC-002**: The documented launch path binds only to `127.0.0.1`, creates no public share/tunnel, and passes the existing GUI privacy contract tests plus the v1.0 configuration tests.
 - **SC-003**: The public test video completes the documented small-model Apple Silicon smoke path and produces a non-empty UTF-8 Taiwan Traditional Chinese Markdown transcript while leaving the current-run audio directory empty.
 - **SC-004**: The deterministic repository suite remains green on the CI-supported Python version, and the release candidate records the exact commit and CI run used for review.
