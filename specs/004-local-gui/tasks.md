@@ -53,7 +53,7 @@ invalid-UTF-8, and wrong-suffix paths and compare successful preview bytes with 
 - [X] T015 [P] Update `README.md` with v0.4 installation, launch, privacy, and local-use instructions
 - [X] T016 Run focused GUI tests, the full deterministic suite, `compileall`, and `git diff --check`
 - [X] T017 Run the real local browser GUI smoke with the approved public video and small model; inspect transcript/audio artifacts and record any Human Gate
-- [ ] T018 Run `$speckit-converge`, update `docs/STATUS.md`, commit, push, and verify deterministic CI
+- [X] T018 Run `$speckit-converge`, update `docs/STATUS.md`, commit, push, and verify deterministic CI
 
 ## Dependencies & Execution Order
 

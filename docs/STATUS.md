@@ -64,29 +64,31 @@ v0.4 adds the first local graphical interface for non-technical use while reusin
 
 The GUI must remain a thin presentation layer over the approved pipeline rather than reimplementing acquisition or transcription.
 
+## v0.4 implementation review
+
+**READY FOR REVIEW on 2026-09-19.**
+
+v0.4 Local Graphical UI is implemented with:
+
+- Spec Kit convergence complete through T018 with all 18 tasks checked;
+- requirements checklist 13/13, security checklist 10/10, and UX checklist 10/10 reviewed;
+- a pinned Gradio 6.27.0 Blocks interface that delegates exactly one request to the approved v0.3 pipeline;
+- explicit loopback binding, no public share, private event APIs, strict CORS, disabled analytics/monitoring,
+  and bounded transcript-file exposure;
+- visible idle/running/success/error states, duplicate-run suppression, cause-specific pipeline errors,
+  complete Markdown preview, and local Markdown download;
+- focused GUI coverage passing 10 tests and the full deterministic repository suite passing 56 tests;
+- a real local browser smoke using the approved public video and `mlx-community/whisper-tiny` that showed
+  running/disabled and terminal/restored controls, produced a 33,577-byte Markdown transcript, exposed its
+  preview/download, showed no public share URL, and left the current-run audio directory empty;
+- GitHub Actions passing for implementation commit `3c92fd5` in run `35404368636`.
+
+No v0.4 implementation blocker or Human Gate remains. Reviewer approval is still required before the milestone is closed.
+
 ## Next autonomous task
 
-Use the Spec Kit lifecycle to create the v0.4 **Local Graphical UI** feature before implementation.
-
-Codex should autonomously:
-
-1. create a new Spec Kit feature for the local GUI;
-2. research the simplest currently suitable local-only UI approach for this Apple Silicon Python project (for example Gradio or another lightweight local framework) rather than assuming a stale package/API;
-3. define measurable acceptance criteria for:
-   - one YouTube URL input;
-   - one Start/Transcribe action;
-   - visible running/success/error status;
-   - transcript preview;
-   - Markdown download/save;
-   - preservation of v0.3 cause-specific error messages;
-   - no public tunnel, hosted processing, telemetry, or account requirement;
-4. reuse `whispertube.pipeline` as the orchestration boundary rather than duplicating downloader/transcription logic;
-5. keep deterministic UI logic tests independent of live YouTube, model downloads, and Apple Silicon hardware;
-6. run the Agent Reviewer Phase before implementation;
-7. implement behavior changes with RED -> GREEN -> REFACTOR;
-8. perform a real local GUI smoke on the development Mac using the approved public test video and an explicit small MLX model;
-9. verify that temporary media cleanup, transcript retention, privacy boundaries, and existing v0.1-v0.3 tests remain intact;
-10. run full deterministic tests, CI, `$speckit-converge`, push, and persist the review handoff in GitHub.
+Review v0.4 against `specs/004-local-gui/`, the completed checklists, local smoke evidence, and exact-SHA CI.
+Do not start v0.5 until v0.4 is explicitly approved or review findings are remediated and reverified.
 
 ## v0.4 scope constraints
 
@@ -102,4 +104,4 @@ Codex should autonomously:
 - Safari browser-cookie fallback remains unexercised because anonymous YouTube acquisition has succeeded in testing.
 - yt-dlp has emitted a missing JavaScript-runtime warning on tested downloads, although the approved test video succeeds.
 - full large-v3 runtime cost and memory use remain unmeasured.
-- GUI framework choice is not yet approved and must be researched/spec-driven in v0.4.
+- Gradio is pinned at 6.27.0; future framework upgrades require rerunning the launch/privacy contract tests and browser smoke.
