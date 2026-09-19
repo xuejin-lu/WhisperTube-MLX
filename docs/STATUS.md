@@ -70,55 +70,52 @@ The GUI must remain a thin presentation layer over the approved pipeline rather 
 
 v0.4 Local Graphical UI is implemented with:
 
-- Spec Kit convergence complete through T018 with all 18 tasks checked;
+- Spec Kit convergence complete through T022 with all 22 tasks checked;
 - requirements checklist 13/13, security checklist 10/10, and UX checklist 10/10 reviewed;
 - a pinned Gradio 6.27.0 Blocks interface that delegates exactly one request to the approved v0.3 pipeline;
 - explicit loopback binding, no public share, private event APIs, strict CORS, disabled analytics/monitoring,
   and bounded transcript-file exposure;
 - visible idle/running/success/error states, duplicate-run suppression, cause-specific pipeline errors,
   complete Markdown preview, and local Markdown download;
-- focused GUI coverage passing 10 tests and the full deterministic repository suite passing 56 tests;
+- focused GUI coverage passing 12 tests and the full deterministic repository suite passing 58 tests;
 - a real local browser smoke using the approved public video and `mlx-community/whisper-tiny` that showed
   running/disabled and terminal/restored controls, produced a 33,577-byte Markdown transcript, exposed its
   preview/download, showed no public share URL, and left the current-run audio directory empty;
 - GitHub Actions passing for implementation commit `3c92fd5` in run `35404368636`.
 
-## Review findings
+## Review finding remediation
 
-v0.4 is **not yet approved for closure**. Repository review found one file-exposure boundary defect:
+**REMEDIATED — REVIEW REQUESTED on 2026-09-19.**
 
-1. **The entire transcript directory is currently exposed through Gradio `allowed_paths`.** `launch_app()`
-   passes the resolved transcript root directory to `allowed_paths`. Current Gradio documentation explicitly
-   states that if an `allowed_paths` entry is a directory, every file in that directory and its subdirectories
-   is directly accessible to users of the running app. This bypasses the callback-level checks that reject
-   non-Markdown, empty, invalid-UTF-8, or otherwise unrelated pre-existing files, and conflicts with FR-006 /
-   the security checklist's local-file boundary.
+The broad transcript-directory `allowed_paths` finding has been resolved:
+
+- `launch_app()` no longer passes the transcript root or any parent directory to `allowed_paths`;
+- non-empty ambient `GRADIO_ALLOWED_PATHS` is rejected before server launch so environment configuration
+  cannot silently restore the exposure;
+- pinned-Gradio integration coverage proves an unrelated pre-existing transcript-root file receives HTTP 403;
+- the same integration coverage proves a validated Markdown result is copied into Gradio's controlled cache,
+  remains downloadable with HTTP 200, and preserves its exact bytes;
+- the real loopback browser smoke independently denied the pre-existing `unrelated.txt` route with HTTP 403,
+  then produced, previewed, and downloaded a 33,603-byte validated transcript through the cache route with
+  HTTP 200 while leaving the current-run audio directory empty;
+- focused GUI tests pass 12/12, the full deterministic suite passes 58/58, `compileall` passes, and
+  `git diff --check` passes;
+- GitHub Actions passed for remediation commit `44371d6` in run `35420386201`.
 
 Official reference used for this review:
 https://www.gradio.app/guides/file-access
 
-The existing validated `gr.File` output can rely on Gradio's controlled output/cache path behavior rather than
-whitelisting the whole output directory. The fix must be verified against the pinned Gradio version rather than
-assuming framework behavior.
+The remediation was verified against the pinned Gradio 6.27.0 implementation rather than inferred from
+framework documentation alone.
 
 ## Current blocker
 
-The broad `allowed_paths` directory exposure blocks v0.4 approval. It is deterministic and requires no Human Gate.
+None. No Human Gate remains. Reviewer approval is still required before v0.4 is closed.
 
 ## Next autonomous task
 
-Run a focused v0.4 Spec Kit convergence pass for the file-serving finding:
-
-- add a RED regression test proving launch does not whitelist the entire transcript directory;
-- add an integration/security test (using the pinned Gradio version) proving an unrelated pre-existing file
-  under the transcript root cannot be fetched through Gradio's direct file route;
-- preserve successful download of the one validated Markdown result (using Gradio's safe output/cache behavior
-  or another exact-artifact mechanism);
-- remove or narrow the broad `allowed_paths` configuration without weakening loopback/share/API/CORS controls;
-- rerun focused GUI tests, full deterministic suite, local browser smoke, CI, and `$speckit-converge`;
-- persist the remediation and request review again.
-
-Do not start v0.5 until v0.4 is approved.
+Review remediation commit `44371d6`, its deterministic/security tests, local smoke evidence, and exact-SHA CI.
+Do not start v0.5 until v0.4 is explicitly approved or new review findings are remediated and reverified.
 
 ## v0.4 scope constraints
 

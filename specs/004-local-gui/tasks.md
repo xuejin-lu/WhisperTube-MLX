@@ -80,4 +80,4 @@ Markdown in P3. Preserve the pipeline as the sole orchestration boundary through
 - [X] T019 Add a RED launch-contract regression proving the transcript directory is not broadly whitelisted per FR-006 / SC-004 (contradicts)
 - [X] T020 Add a RED pinned-Gradio integration/security test proving an unrelated transcript-root file is denied while the validated Markdown result remains downloadable per FR-005 / FR-006 / SC-004 (missing)
 - [X] T021 Remove or narrow broad `allowed_paths` file serving while preserving the validated Gradio output/cache download path per FR-006 (contradicts)
-- [ ] T022 Rerun focused/full validation, real local browser smoke, status handoff, push, exact-SHA CI, and final convergence per FR-013 / SC-007 (partial)
+- [X] T022 Rerun focused/full validation, real local browser smoke, status handoff, push, exact-SHA CI, and final convergence per FR-013 / SC-007 (partial)
