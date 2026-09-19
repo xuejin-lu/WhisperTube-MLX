@@ -122,7 +122,7 @@ Codex should autonomously:
 
 ## v1.0 implementation state
 
-**Candidate version**: `1.0.0` — implementation in progress; GitHub Release not published.
+**Candidate version**: `1.0.0` — implementation complete; repository review pending; GitHub Release not published.
 
 The pre-implementation Agent Reviewer Phase is complete for `specs/005-public-usable-release/`:
 
@@ -141,7 +141,7 @@ Verified locally so far:
 - the approved public test video completed with explicit `mlx-community/whisper-tiny`, producing a 33,924-byte UTF-8 Markdown transcript and leaving the current-run audio directory empty;
 - artifact inspection found no tracked private/runtime artifact; the smoke transcript and audio remain under ignored `temp/` paths.
 
-Remaining candidate work before review-ready handoff:
+Risks and final publication gate:
 
 - Spec Kit converge is complete with no remaining tasks appended;
 - staged candidate artifact inspection is clean, and deterministic CI passed for implementation commit `a165701` in GitHub Actions run `35436400122`;
