@@ -193,7 +193,7 @@ commit is pushed and independently reviewed; the GitHub Release remains unpublis
 
 ## v1.0 clean-path remediation
 
-**IMPLEMENTED — awaiting pushed-commit CI evidence and repository review.**
+**IMPLEMENTED AND CI-VERIFIED — repository review pending.**
 
 The focused convergence pass completed the requested remediation:
 
@@ -210,11 +210,14 @@ The focused convergence pass completed the requested remediation:
   `mlx-community/whisper-tiny` produced a 34,175-byte UTF-8 Markdown transcript and left the current-run audio
   directory empty. The PATH included the project `.venv/bin`, Homebrew `ffmpeg`, and system directories; no global
   `yt-dlp` was required.
+- Remediation commit `1ddb23dce0c64998ebb6156df4c371574159cdd38` is pushed to `origin/main`; GitHub Actions run
+  `35440765844` completed with `success`.
+- The follow-up Spec Kit convergence pass found no remaining unbuilt work after T029-T032; T033 is complete.
 
-The remaining autonomous work is to run artifact inspection, exact-SHA CI, and follow-up Spec Kit convergence after
-the remediation commit, then request repository review again. Do not create tag `v1.0.0` or publish the GitHub Release.
+The remaining action is repository review of this pushed remediation. Do not create tag `v1.0.0` or publish the
+GitHub Release.
 
-## v1.0 next autonomous task
+## v1.0 original implementation plan
 
 Run a focused v1.0 Spec Kit convergence pass:
 
