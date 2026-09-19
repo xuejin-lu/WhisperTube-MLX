@@ -261,7 +261,7 @@ The reviewed candidate is now authorized for the separate publication action, bu
 The next autonomous task, only after the maintainer starts it, is:
 
 1. synchronize to the approved candidate state;
-2. create immutable tag `v1.0.0` at the reviewed release snapshot (including this approval handoff as appropriate to the documented publication procedure);
+2. create annotated tag `v1.0.0` at the reviewed release snapshot (including this approval handoff as appropriate to the documented publication procedure);
 3. create the GitHub Release using the reviewed release notes and GitHub-generated source archives only;
 4. do not attach model weights, credentials, media, transcripts, cookies, browser profiles, or runtime caches;
 5. verify the published tag/release points to the intended reviewed commit and that source assets are present;
@@ -273,7 +273,7 @@ Do not add new product features during publication.
 
 **PUBLISHED on 2026-09-19 after explicit maintainer authorization.**
 
-- Immutable tag `v1.0.0` points to the approved release snapshot
+- Published annotated tag `v1.0.0` points to the approved release snapshot
   `b89298016a67905ad9b5685ebf79e110f8a788cb`.
 - GitHub Release: https://github.com/xuejin-lu/WhisperTube-MLX/releases/tag/v1.0.0
 - The Release was created as a non-draft, non-prerelease release with GitHub-generated source archives only;
@@ -285,34 +285,31 @@ Do not add new product features during publication.
 
 ## v1.0 final publication review
 
-**PUBLICATION SUCCEEDED — metadata remediation required before final verification is closed.**
+**PUBLICATION SUCCEEDED — metadata remediation completed; final verification closed.**
 
 Final repository/release verification confirmed:
 
 - annotated tag `v1.0.0` resolves to commit `b89298016a67905ad9b5685ebf79e110f8a788cb`;
 - GitHub Release `v1.0.0 — Public Usable Release` is published, non-draft, non-prerelease;
 - the Release has no manually attached assets; only GitHub-generated source archives are present;
-- post-publication documentation commit `655cc5f` records the release and no product code changed.
+- post-publication documentation commit `655cc5f` records the release and no product code changed;
+- the Release body now links to the tracked `README.md` and `docs/TROUBLESHOOTING.md` at tag `v1.0.0`;
+- repository wording uses the verifiable term “published annotated tag” rather than claiming GitHub tag immutability.
 
-Two release-metadata findings remain:
+The previously recorded release-metadata findings are resolved:
 
-1. **Broken public quickstart reference.** The published Release body says to see `docs/QUICKSTART.md`, but that path does not exist. The actual tracked quickstart is `specs/005-public-usable-release/quickstart.md`. Update the GitHub Release body to point to a real public instruction path (prefer README plus `docs/TROUBLESHOOTING.md`, or the actual tracked quickstart).
-2. **Unverified immutability wording.** `docs/STATUS.md` currently describes `v1.0.0` as an "Immutable tag", while GitHub reports the published release with `immutable: false`. The tag is correctly resolved and currently points to the approved snapshot, but repository state should use only verifiable wording such as "annotated tag" / "published tag" unless tag immutability is separately enforced and verified.
+1. The Release body now points to the tracked README and troubleshooting documentation; no nonexistent `docs/QUICKSTART.md` reference remains.
+2. The status wording now says “published annotated tag”; it does not claim GitHub tag immutability.
 
-These findings do not require rebuilding or republishing v1.0.0 and do not invalidate the reviewed source snapshot.
+These metadata-only corrections did not rebuild or republish v1.0.0 and do not alter the reviewed source snapshot.
 
-## v1.0 final verification blocker
+## v1.0 final verification
 
-Final publication verification remains open only for the metadata corrections above.
+Final publication verification is complete; no blocker remains.
 
 ## v1.0 next autonomous task
 
-Perform a publication-metadata-only convergence pass:
+No publication task remains. Future `開始` runs should synchronize and stop unless a new feature, bug, or reviewer finding is added:
 
-- edit the existing GitHub Release `v1.0.0` body so all installation/documentation references resolve to tracked files;
-- do not change the tag target, release assets, version, source snapshot, or product code;
-- replace unverified "immutable tag" wording in repository status/release documentation with accurate verified wording, unless GitHub tag immutability is explicitly configured and proven;
-- re-fetch the published Release and annotated tag to verify the corrected body, tag target, draft/prerelease state, and empty manual asset list;
-- update `docs/STATUS.md` with the final publication verification result and request review again.
-
-Do not create a new release or version for this metadata-only correction.
+- do not create another release or version for the completed v1.0 publication;
+- only begin new work when a new scoped request or reviewer finding exists.
