@@ -163,3 +163,48 @@ The v1.0 implementation satisfies the active spec, plan, tasks, and constitution
 - full large-v3 runtime cost and memory use remain unmeasured.
 - Gradio is pinned at 6.27.0; future framework upgrades require rerunning the launch/privacy contract tests and browser smoke.
 - macOS distribution/signing/notarization requirements have not yet been selected; v1.0 research must determine whether they are necessary for the chosen distribution path.
+
+
+## v1.0 repository review findings
+
+**NOT APPROVED FOR PUBLICATION — remediation required.**
+
+Repository review found one clean-machine runtime blocker and one corresponding test-coverage gap:
+
+1. **The documented launcher does not expose the project-installed `yt-dlp` executable to the pipeline.**
+   `scripts/setup_macos.sh` installs pinned `yt-dlp` into `.venv/bin/yt-dlp`, but
+   `scripts/launch_macos.sh` executes `.venv/bin/python -m whispertube.gui` without activating the
+   environment or prepending `.venv/bin` to `PATH`. The approved downloader invokes `yt-dlp` by
+   executable name through `subprocess.run()`. On a clean user Mac with no global `yt-dlp`, the GUI
+   can therefore fail at first acquisition even though setup successfully installed the dependency.
+   The development-machine smoke can miss this because a global `yt-dlp` may already be present.
+2. **The release test evidence does not currently exercise this shell/runtime boundary.**
+   T010 is marked complete, but `tests/test_release.py` currently checks script text rather than executing
+   a clean-PATH launcher/setup scenario that proves the project-owned `yt-dlp` is the one available at runtime.
+
+The release list is still empty, so no premature GitHub Release publication occurred. Both release scripts are
+tracked executable (`100755`), and latest candidate CI is green; those facts do not remove the clean-PATH blocker.
+
+## v1.0 current blocker
+
+The release cannot be approved until the documented setup + launch path works without any separately installed
+global `yt-dlp`.
+
+## v1.0 next autonomous task
+
+Run a focused v1.0 Spec Kit convergence pass:
+
+- add RED script/runtime regression coverage that creates a fake/minimal project virtual environment, removes any
+  global `yt-dlp` from the test PATH, and proves the documented launcher still makes the project-owned
+  `.venv/bin/yt-dlp` discoverable to the launched process;
+- add/repair deterministic shell tests for the T010 claims (rerun safety, missing prerequisite behavior,
+  missing `.venv`, paths with spaces, and launcher argument preservation) rather than relying only on source-text assertions;
+- implement the smallest safe launcher/setup fix, preferably by explicitly prepending the project `.venv/bin`
+  to `PATH` before exec or by another equally explicit project-owned executable path;
+- rerun focused release tests, the full deterministic suite, clean-PATH launch verification, real Apple Silicon
+  small-model release smoke, artifact inspection, exact-SHA CI, and `$speckit-converge`;
+- update `docs/RELEASE.md` evidence/checklist state so completed candidate checks are distinguishable from the
+  still-separate publication action;
+- keep the GitHub Release unpublished and request repository review again.
+
+Do not create tag `v1.0.0` or publish the GitHub Release until this finding is closed and the candidate is explicitly approved.
