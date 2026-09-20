@@ -1,5 +1,10 @@
 # WhisperTube-MLX — Project Specification
 
+> Historical product specification for the pre-007 transcription application.
+> The current mainline product is downloader-only; see
+> `specs/007-downloader-only-pivot/spec.md` and the current section of
+> `docs/STATUS.md` for the active scope. This document is retained for history.
+
 ## 1. Product goal
 
 Build a free, local-first YouTube transcription app for Apple Silicon Macs.

@@ -1,168 +1,87 @@
 # WhisperTube-MLX
-Local YouTube transcription app powered by MLX Whisper for Apple Silicon.
 
-## v1.0: public Apple Silicon release
+WhisperTube downloads the best available audio from one YouTube video or
+playlist for manual use elsewhere, such as Google Colab. It does not transcribe,
+upload, summarize, or run a local web server.
 
-v1.0 is distributed as a versioned source release with a reproducible local setup
-and launch path. It targets a native Apple Silicon Mac running macOS 14 or later,
-native Python 3.10+, and local `ffmpeg`. It does not ship a signed/notarized app,
-public tunnel, hosted transcription, telemetry, account, or database.
+## Normal use on Apple Silicon macOS
 
-From an unpacked checkout or source release archive, run the one-time setup:
+Requirements:
+
+- native Python 3.10 or newer;
+- a network connection to YouTube;
+- no browser login for the normal anonymous path.
+
+From the repository root, run setup once:
 
 ```bash
 ./scripts/setup_macos.sh
 ```
 
-After setup, the normal macOS workflow is simply to open Finder and double-click
-`WhisperTube.command` in the project folder. It launches the local GUI with the
-normal large-v3 quality target and opens it in your browser. If port 7860 is already
-in use, WhisperTube automatically selects the next available local port instead of
-failing. Terminal users can still launch with:
+Then double-click `DownloadAudio.command` in Finder, paste one YouTube URL, and
+press Return. Audio files are saved under:
 
-```bash
-./scripts/launch_macos.sh
+```text
+~/Downloads/WhisperTube/
 ```
 
-The setup creates or reuses `.venv` and installs the pinned local dependencies.
-It never deletes `outputs/`, `temp/`, browser cookies, credentials, or model
-caches. The GUI remains loopback-only at `127.0.0.1`. Check the project version
-or prerequisites with:
+The terminal-equivalent command is:
 
 ```bash
-./.venv/bin/python -m whispertube.release --version
-./.venv/bin/python -m whispertube.release --check
+./scripts/launch_macos.sh 'https://www.youtube.com/watch?v=VIDEO_ID'
+./scripts/launch_macos.sh 'https://www.youtube.com/playlist?list=PLAYLIST_ID'
 ```
 
-The normal quality target is `mlx-community/whisper-large-v3-mlx`; the first use
-may download a local model cache. For a constrained validation run, select
-`mlx-community/whisper-tiny` explicitly. See
-[`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) for common setup and local
-permission failures, and [`docs/RELEASE.md`](docs/RELEASE.md) for the
-pre-publication candidate checklist. The checklist does not publish a GitHub
-Release automatically.
+The setup creates or reuses `.venv` and installs only the pinned yt-dlp runtime.
+It does not delete downloads, cookies, or caches. The launcher resolves the
+repository path safely even when it contains spaces and uses the project-managed
+yt-dlp executable.
 
-## v0.1: local audio acquisition
+## Video and playlist behavior
 
-The first milestone provides a small Python CLI that normalizes one YouTube URL
-and downloads that video's best available audio-only representation (`bestaudio`)
-with local `yt-dlp`. Playlist parameters are ignored; only the current video is
-downloaded.
+- A watch, short, live, embed, or `youtu.be` URL downloads one video.
+- A URL whose path is explicitly `/playlist?list=...` downloads the playlist.
+- A watch URL that merely contains `list=` remains a single-video request.
+- Video files use `%(title)s [%(id)s].%(ext)s`.
+- Playlist files use a playlist directory and numeric order:
+  `%(playlist_index)03d - %(title)s [%(id)s].%(ext)s`.
+- yt-dlp selects `bestaudio`; files keep their source extension such as `.webm`
+  or `.m4a`. No MP3 conversion is performed.
+- Individual unavailable playlist entries are skipped when yt-dlp supports
+  continuation, and the terminal prints downloaded/failed counts plus the output
+  directory.
 
-Install `yt-dlp` on the maintainer's Mac, then run this local verification
-command from the repository root:
+## Optional browser-cookie retry
+
+Anonymous download is always attempted by default. If YouTube requires local
+browser authentication, opt in explicitly:
 
 ```bash
-python3 -m pip install -U yt-dlp
-python3 -m whispertube.youtube \
-  'https://www.youtube.com/watch?v=gmj41fQTbfY' \
-  --output-dir temp/audio
+./scripts/launch_macos.sh \
+  --cookies-from-browser safari \
+  'https://www.youtube.com/watch?v=VIDEO_ID'
 ```
 
-The expected evidence is a `[download] 100%` line and an audio file under
-`temp/audio/`. The directory is ignored by Git. If YouTube requires local
-browser authentication, retry with the browser-cookie fallback (cookies stay
-on the Mac and are not written to this repository):
+Cookies remain local to the browser and are never exported to this repository or
+sent to Colab. WhisperTube never opens a browser or captures credentials.
+
+## Verification
+
+Run deterministic tests without contacting YouTube:
 
 ```bash
-python3 -m whispertube.youtube \
-  'https://www.youtube.com/watch?v=gmj41fQTbfY' \
-  --output-dir temp/audio \
-  --cookies-from-browser safari
+./.venv/bin/python -m unittest discover -s tests -v
+git diff --check
 ```
 
-Run the unit tests with:
+For local smoke validation, use an approved public video and a small public
+playlist with a safe temporary output root. Confirm that audio files are created,
+playlist names are numerically ordered, no transcript or server appears, and no
+media is committed.
 
-```bash
-python3 -m unittest discover -s tests -v
-```
+## Historical release
 
-Local smoke verification on 2026-09-16 succeeded anonymously with `yt-dlp
-2026.08.19`; the test video produced a `.webm` audio file under
-`temp/audio-v0-1-converged/` using yt-dlp audio-only format `251`.
-
-## v0.2: local MLX transcription
-
-Install the Apple Silicon-only local inference dependencies:
-
-```bash
-python3 -m pip install -r requirements-macos.txt
-brew install ffmpeg
-```
-
-Transcribe one local audio file with the large-v3 quality target (or choose a
-smaller compatible model for a constrained smoke run):
-
-```bash
-python3 -m whispertube.transcription \
-  /path/to/audio.webm \
-  --model mlx-community/whisper-large-v3-mlx \
-  --output-dir temp/transcripts
-```
-
-The command runs MLX Whisper locally, requests Chinese transcription, converts
-the returned text to Taiwan Traditional Chinese with OpenCC, and writes one
-UTF-8 Markdown transcript. Model caches, audio, and transcripts remain local
-and ignored by Git. CI uses deterministic fakes and does not download models.
-
-On the development Apple Silicon Mac, a 2026-09-16 smoke run used
-`mlx-community/whisper-tiny` against the existing v0.1 audio artifact and
-completed successfully with recognizable Chinese transcript output.
-The run emitted a warning about no JavaScript runtime, but completed without
-requiring browser cookies.
-
-## v0.3: end-to-end CLI pipeline
-
-Run both approved local stages with one command:
-
-```bash
-python3 -m whispertube.pipeline 'https://www.youtube.com/watch?v=VIDEO_ID' \
-  --model mlx-community/whisper-large-v3-mlx \
-  --audio-dir temp/pipeline-audio \
-  --output-dir temp/pipeline-transcripts
-```
-
-The pipeline cleans only audio acquired inside its current temporary directory,
-keeps the Markdown transcript, and preserves download, dependency, model,
-inference, output, and cleanup error categories.
-
-## v0.4: local graphical UI
-
-Install the pinned local UI dependency in addition to the Apple Silicon
-inference dependencies:
-
-```bash
-python3 -m pip install -r requirements-ui.txt
-python3 -m pip install -r requirements-macos.txt
-```
-
-Launch the interface and open its loopback URL in the local browser:
-
-```bash
-python3 -m whispertube.gui
-```
-
-The UI provides one YouTube URL input, one Local audio file picker, one
-Transcribe action, visible running/success/error status, a Markdown preview,
-and a local Markdown download. Choose exactly one input per request: either a
-YouTube URL or one local audio file. Local audio reuses the existing MLX
-transcription boundary and supports `.aac`, `.flac`, `.m4a`, `.mp3`, `.ogg`,
-`.wav`, and `.webm`. Local video files such as `.mp4`, `.mov`, and `.mkv` are
-not supported. The original local audio remains user-owned and is never
-deleted, moved, renamed, truncated, or overwritten. YouTube requests continue
-to reuse the v0.3 pipeline and preserve its cause-specific errors.
-
-The server binds explicitly to `127.0.0.1`; public sharing, framework
-analytics, monitoring, and direct queue bypass are disabled. Only validated
-non-empty UTF-8 Markdown below the configured ignored transcript directory can
-be previewed or copied into Gradio's controlled cache for download; the
-transcript directory itself is not exposed as an allowed file-serving path. No
-public tunnel, hosted processing, telemetry, account, or database is used.
-
-For a constrained local smoke test, select the small model at launch without
-changing the normal large-v3 quality target:
-
-```bash
-python3 -m whispertube.gui --model mlx-community/whisper-tiny \
-  --audio-dir temp/gui-audio-v0-4 --output-dir temp/gui-transcripts-v0-4
-```
+The v1.0.0 tag is historical evidence of the former local transcription product.
+The current `main` workflow is intentionally downloader-only. Transcription,
+MLX, OpenCC, Gradio, Colab automation, database, telemetry, code signing, and
+`.app` packaging are outside the current product scope.

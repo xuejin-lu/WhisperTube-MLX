@@ -1,1 +1,1 @@
-"""Local YouTube acquisition helpers for WhisperTube-MLX."""
+"""Local YouTube audio downloader for WhisperTube-MLX."""

@@ -12,4 +12,4 @@ fi
 
 cd "$PROJECT_ROOT"
 export PATH="$PROJECT_ROOT/.venv/bin:$PATH"
-exec "$VENV_PYTHON" -m whispertube.gui "$@"
+exec "$VENV_PYTHON" -m whispertube.downloader "$@"

@@ -14,11 +14,6 @@ if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   exit 1
 fi
 
-if ! "$PYTHON_BIN" -m whispertube.release --check; then
-  echo "Setup stopped before changing the project environment." >&2
-  exit 1
-fi
-
 if [[ ! -x "$VENV_PYTHON" ]]; then
   if [[ -e "$VENV_PATH" ]]; then
     echo "ERROR: $VENV_PATH exists but has no executable Python; move it aside and retry." >&2
@@ -28,11 +23,10 @@ if [[ ! -x "$VENV_PYTHON" ]]; then
 fi
 
 "$VENV_PYTHON" -m pip install --require-virtualenv \
-  -r "$PROJECT_ROOT/requirements-macos.txt" \
-  -r "$PROJECT_ROOT/requirements-ui.txt"
+  -r "$PROJECT_ROOT/requirements-macos.txt"
 
-if [[ -f "$PROJECT_ROOT/WhisperTube.command" ]]; then
-  chmod u+x "$PROJECT_ROOT/WhisperTube.command"
+if [[ -f "$PROJECT_ROOT/DownloadAudio.command" ]]; then
+  chmod u+x "$PROJECT_ROOT/DownloadAudio.command"
 fi
 
-echo "Setup complete. Double-click WhisperTube.command in Finder, or run: ./scripts/launch_macos.sh"
+echo "Setup complete. Double-click DownloadAudio.command in Finder, or run: ./scripts/launch_macos.sh"

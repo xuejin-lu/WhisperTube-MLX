@@ -417,6 +417,24 @@ Hard boundaries:
 - playlist downloads preserve numeric order in filenames and should continue past individual unavailable entries where yt-dlp supports it;
 - retain `v1.0.0` as historical release evidence rather than rewriting history.
 
+## 007 implementation state
+
+**IMPLEMENTATION IN PROGRESS — pre-implementation review complete.**
+
+Feature 007 planning artifacts are now present:
+
+- `specs/007-downloader-only-pivot/plan.md`
+- `specs/007-downloader-only-pivot/research.md`
+- `specs/007-downloader-only-pivot/data-model.md`
+- `specs/007-downloader-only-pivot/quickstart.md`
+- `specs/007-downloader-only-pivot/checklists/security.md` — agent-reviewed 15/15
+- `specs/007-downloader-only-pivot/tasks.md`
+
+The reviewer phase fixed the actionable-error wording gap in the spec before
+implementation. RED/GREEN evidence currently includes the new downloader focused
+suite passing 14/14 after the expected missing-module RED failure. The active
+mainline migration and real YouTube smoke tests remain in progress.
+
 ## 007 next autonomous task
 
 On the next Codex `開始`:

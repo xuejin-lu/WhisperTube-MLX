@@ -186,6 +186,8 @@ The launcher must:
 - resolve the repository path safely even if it contains spaces;
 - use the project-managed yt-dlp if the repository setup provides one;
 - print clear errors if required dependencies are missing;
+- print actionable errors and return non-zero for invalid URLs, missing yt-dlp,
+  unwritable output, and unexpected yt-dlp failures before or during a download;
 - not launch a browser or local server;
 - not invoke transcription code.
 
