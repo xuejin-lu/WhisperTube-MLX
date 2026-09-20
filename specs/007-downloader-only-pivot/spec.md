@@ -2,7 +2,7 @@
 
 **Feature ID**: 007-downloader-only-pivot  
 **Target**: product simplification / new mainline direction  
-**Status**: Ready for Spec Kit planning and implementation
+**Status**: Complete — approved
 
 ## 1. Product definition
 
