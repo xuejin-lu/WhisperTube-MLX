@@ -452,3 +452,52 @@ Verified implementation evidence:
 Complete repository review of the pushed downloader-only pivot.
 
 Do not publish a new tag/release and do not begin Colab/transcription integration.
+
+
+## 007 downloader-only pivot approval
+
+**APPROVED on 2026-09-21.**
+
+Repository review verified:
+
+- the active product path is downloader-only: URL -> yt-dlp best audio -> local files;
+- the former active transcription modules `whispertube/transcription.py`, `whispertube/pipeline.py`, and `whispertube/gui.py` are removed from current `main`;
+- `requirements-ui.txt` and the old `WhisperTube.command` are removed from current `main`;
+- the active runtime requirement is only pinned `yt-dlp==2026.08.19`;
+- `DownloadAudio.command` is the normal double-click entry point and delegates to the project-managed downloader without starting a browser/server;
+- when no URL argument is supplied, the downloader prompts for one YouTube video or explicit playlist URL;
+- watch, youtu.be, Shorts, live, and embed URLs normalize to one video;
+- a watch URL containing `list=` remains one video;
+- an explicit `/playlist?list=...` URL is classified as a playlist;
+- single-video commands use `--no-playlist --format bestaudio`;
+- playlist commands use `--yes-playlist --ignore-errors --format bestaudio`;
+- playlist output uses `%(playlist_index)03d` ordering and a playlist-named directory;
+- no MP3 extraction/re-encoding postprocessor is added;
+- default output is `~/Downloads/WhisperTube/`;
+- browser cookies are used only when explicitly requested;
+- progress is streamed and a downloaded/failed-or-skipped/output summary is printed;
+- clean-PATH/path-with-spaces launcher coverage proves the project-owned yt-dlp is discovered;
+- setup reruns do not delete existing user files;
+- downloader source/launcher tests assert no MLX, Whisper, OpenCC, Gradio, old pipeline, localhost server, or GUI invocation;
+- the full active deterministic suite passes 14/14;
+- latest review HEAD `391e05d84d498e179bbbf05f03d299c28dd7327b` passed GitHub Actions run `35538774989`;
+- real single-video smoke produced exactly one non-MP3 audio artifact and no transcript/server;
+- real playlist smoke produced multiple numerically ordered audio files with no transcription path;
+- tracked artifact inspection found no credentials, cookies, media, transcripts, model caches, private keys, or absolute local paths;
+- no new tag or GitHub Release was created; `v1.0.0` remains historical evidence of the former product direction.
+
+No implementation blocker or Human Gate remains for feature 007.
+
+### Cosmetic follow-up
+
+The GitHub repository description still reflects the old MLX transcription product. This does not affect the downloader workflow, tests, or runtime. Update that repository metadata separately when convenient.
+
+## 007 current state
+
+The downloader-only pivot is approved on `main`.
+
+Normal user flow:
+
+`double-click DownloadAudio.command -> paste one video/playlist URL -> audio saved under ~/Downloads/WhisperTube/ -> manually upload to Colab`
+
+No further Codex work is queued unless a downloader bug or a new scoped requirement is introduced.
