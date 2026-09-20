@@ -2,7 +2,7 @@
 
 ## Current milestone
 
-**v1.0 — Public usable release**
+**v1.1 candidate — Local audio input**
 
 ## v0.1 approval
 
@@ -313,3 +313,46 @@ No publication task remains. Future `開始` runs should synchronize and stop un
 
 - do not create another release or version for the completed v1.0 publication;
 - only begin new work when a new scoped request or reviewer finding exists.
+
+
+## v1.1 local-audio-input kickoff
+
+**SPEC READY — implementation not started.**
+
+The next scoped product feature is local audio input in the existing loopback GUI.
+
+Repository specification:
+
+- `specs/006-local-media-input/spec.md`
+- `specs/006-local-media-input/contracts/ui.md`
+
+The feature preserves the approved YouTube path and adds one mutually exclusive local-audio route:
+
+`double-click launcher -> YouTube URL OR local audio -> Transcribe -> Traditional Chinese Markdown`
+
+Hard boundaries:
+
+- reuse the existing `transcribe_audio()` implementation rather than creating a second Whisper stack;
+- initially support only the audio suffixes already accepted by the transcription module: `.aac .flac .m4a .mp3 .ogg .wav .webm`;
+- local video files such as `.mp4` / `.mov` are not part of this feature;
+- the user's original local audio is never cleanup-eligible and must remain unchanged on success or failure;
+- URL and local-file inputs are mutually exclusive; both/neither are input errors and must not invoke a backend;
+- preserve loopback-only Gradio, no public share, no broad file-serving directory, and all existing transcript validation/privacy contracts;
+- no new tag or GitHub Release during implementation.
+
+## v1.1 next autonomous task
+
+On the next Codex `開始`:
+
+1. fetch/rebase to current `origin/main`;
+2. read `AGENTS.md`, `docs/STATUS.md`, and `specs/006-local-media-input/spec.md`;
+3. run the repository Spec Kit lifecycle for feature 006, including clarify/plan/checklist/tasks/analyze as appropriate;
+4. resolve generated checklist items under `docs/CHECKLIST_REVIEW_POLICY.md`;
+5. implement with TDD, preserving the existing YouTube path and all privacy/file-ownership invariants;
+6. add deterministic dispatch, ownership, suffix, output, privacy, and regression tests;
+7. perform a real Apple Silicon local-audio GUI smoke with an explicit small model and a non-sensitive untracked local audio fixture;
+8. run the full deterministic suite, `git diff --check`, `$speckit-converge`, push, and verify exact-HEAD CI;
+9. persist review evidence in `docs/STATUS.md` and Spec Kit tasks/checklists;
+10. stop and request review.
+
+Do not publish a new release or begin unrelated features.
