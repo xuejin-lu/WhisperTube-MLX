@@ -354,3 +354,36 @@ Verified implementation evidence:
 ## v1.1 next autonomous task
 
 Complete the remaining handoff only: record the converged feature's commit/run evidence and stop for repository review. Do not publish a new release or begin unrelated features.
+
+
+## v1.1 local-audio-input approval
+
+**APPROVED on 2026-09-21.**
+
+Repository review verified:
+
+- the GUI exposes exactly two mutually exclusive routes: one YouTube URL or one local audio file;
+- URL-only requests continue to call the approved `run_pipeline()` path exactly once;
+- local-only requests call the existing `transcribe_audio()` boundary directly and do not invoke yt-dlp acquisition;
+- neither-input and both-input cases fail as input errors without invoking either backend;
+- supported local suffixes are sourced from the canonical transcription module: `.aac .flac .m4a .mp3 .ogg .wav .webm`;
+- local video containers remain out of scope;
+- the selected local source remains present and byte-identical across success, inference failure, output failure, and simulated interruption coverage;
+- transcript collision behavior remains non-destructive and no existing Markdown is silently overwritten;
+- the existing loopback-only, private-event, no-share, strict-CORS, no-telemetry, no-broad-`allowed_paths`, and ambient-`GRADIO_ALLOWED_PATHS` protections remain intact;
+- the existing Gradio direct-file regression still returns HTTP 403 for unrelated files while validated Markdown is served through the controlled cache path;
+- focused GUI/transcription tests pass 39/39 and the full deterministic suite passes 80/80;
+- a real Apple Silicon local-audio GUI smoke with `mlx-community/whisper-tiny` produced a 34,456-byte UTF-8 Markdown result, did not invoke the YouTube pipeline, and left the original source present and byte-identical;
+- loopback GUI smoke at `127.0.0.1:17862` returned HTTP 200 with no public share URL;
+- artifact inspection is clean and runtime media/transcripts remain ignored;
+- implementation commit `9f72a35806eb97114210d7d1159675e2bcb28997` passed GitHub Actions run `35529270503`;
+- latest review-handoff commit `0ccdab9b75bccbf0a6ba3f6645a6dbc033a633d7` passed GitHub Actions run `35529400978`;
+- no new tag or GitHub Release was created; `v1.0.0` remains the only published release.
+
+No implementation blocker or Human Gate remains for feature 006.
+
+## v1.1 current state
+
+Local audio input is approved on `main` and is ready for local use after synchronizing the repository.
+
+No publication action is authorized by this approval. Creating a `v1.1.0` tag/GitHub Release, if desired, is a separate release decision.
