@@ -419,7 +419,7 @@ Hard boundaries:
 
 ## 007 implementation state
 
-**IMPLEMENTATION IN PROGRESS — pre-implementation review complete.**
+**IMPLEMENTATION COMPLETE — review handoff pending.**
 
 Feature 007 planning artifacts are now present:
 
@@ -431,23 +431,23 @@ Feature 007 planning artifacts are now present:
 - `specs/007-downloader-only-pivot/tasks.md`
 
 The reviewer phase fixed the actionable-error wording gap in the spec before
-implementation. RED/GREEN evidence currently includes the new downloader focused
-suite passing 14/14 after the expected missing-module RED failure. The active
-mainline migration and real YouTube smoke tests remain in progress.
+implementation. RED/GREEN evidence includes the expected missing-module RED
+failure followed by the downloader focused suite passing 14/14.
+
+Verified implementation evidence:
+
+- setup rerun succeeded with the only active runtime dependency, `yt-dlp==2026.08.19`;
+- full deterministic suite passes 14/14 without UI, MLX, or transcription dependencies;
+- shell syntax, executable-bit, and `git diff --check` validation passed;
+- real approved public single-video smoke produced exactly one `.webm` audio file under ignored `temp/v1-007-single-0XQ6gC/`, with no transcript or server;
+- real public playlist smoke used `PLmDz6Vh80EYFMfihXPGlE393rtZYwV3TM` and a temporary first-three-items wrapper, producing ordered `001`, `002`, and `003` `.webm` files under ignored `temp/v1-007-playlist-5BUGRp/`, with no transcript;
+- tracked artifact inspection found no credentials, cookies, media, caches, private keys, or absolute local paths;
+- follow-up Spec Kit convergence found no remaining unbuilt work;
+- implementation commit `7fe2963d4ef4442bcea0f99951cfaf40c264caa3` is pushed to `origin/main` and passed [GitHub Actions run 35538652131](https://github.com/xuejin-lu/WhisperTube-MLX/actions/runs/35538652131);
+- no new tag or GitHub Release was created; `v1.0.0` remains historical release evidence.
 
 ## 007 next autonomous task
 
-On the next Codex `開始`:
-
-1. synchronize to current `origin/main`;
-2. read `AGENTS.md`, this status, and `specs/007-downloader-only-pivot/spec.md`;
-3. run the Spec Kit lifecycle for feature 007;
-4. aggressively reduce active product complexity;
-5. implement a downloader-only normal workflow with `DownloadAudio.command`;
-6. add deterministic video/playlist URL, yt-dlp command, output naming, launcher, cookie-option, and no-transcription regression tests;
-7. perform real single-video and small-playlist smoke tests;
-8. rewrite README around the downloader-only product;
-9. run full tests, `git diff --check`, `$speckit-converge`, push, and verify exact-HEAD CI;
-10. stop for repository review.
+Complete repository review of the pushed downloader-only pivot.
 
 Do not publish a new tag/release and do not begin Colab/transcription integration.

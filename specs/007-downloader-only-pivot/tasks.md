@@ -51,8 +51,8 @@ description: "Implementation tasks for the downloader-only product pivot"
 
 ## Phase 6: Review handoff
 
-- [ ] T023 Update `docs/STATUS.md` with exact test/smoke/artifact evidence, unresolved risks, exact commit/CI state, and explicit no-new-release boundary.
-- [ ] T024 Commit and push the converged downloader-only pivot, verify exact-HEAD deterministic CI, confirm a clean tree, and stop for repository review.
+- [x] T023 Update `docs/STATUS.md` with exact test/smoke/artifact evidence, unresolved risks, exact commit/CI state, and explicit no-new-release boundary.
+- [x] T024 Commit and push the converged downloader-only pivot, verify exact-HEAD deterministic CI, confirm a clean tree, and stop for repository review.
 
 ## Dependencies & Execution Order
 
