@@ -88,6 +88,10 @@ class ReleaseConfigurationTests(unittest.TestCase):
         root = Path(__file__).parents[1]
         setup = (root / "scripts/setup_macos.sh").read_text(encoding="utf-8")
         launch = (root / "scripts/launch_macos.sh").read_text(encoding="utf-8")
+        finder_launcher_path = root / "WhisperTube.command"
+        finder_launcher = finder_launcher_path.read_text(encoding="utf-8")
+        self.assertTrue(os.access(finder_launcher_path, os.X_OK))
+        self.assertIn("scripts/launch_macos.sh", finder_launcher)
         self.assertIn("-m whispertube.release --check", setup)
         self.assertIn("-m whispertube.gui", launch)
         self.assertNotIn("--share", launch)

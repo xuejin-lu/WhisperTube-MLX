@@ -8,10 +8,19 @@ and launch path. It targets a native Apple Silicon Mac running macOS 14 or later
 native Python 3.10+, and local `ffmpeg`. It does not ship a signed/notarized app,
 public tunnel, hosted transcription, telemetry, account, or database.
 
-From an unpacked checkout or source release archive, run:
+From an unpacked checkout or source release archive, run the one-time setup:
 
 ```bash
 ./scripts/setup_macos.sh
+```
+
+After setup, the normal macOS workflow is simply to open Finder and double-click
+`WhisperTube.command` in the project folder. It launches the local GUI with the
+normal large-v3 quality target and opens it in your browser. If port 7860 is already
+in use, WhisperTube automatically selects the next available local port instead of
+failing. Terminal users can still launch with:
+
+```bash
 ./scripts/launch_macos.sh
 ```
 

@@ -31,4 +31,8 @@ fi
   -r "$PROJECT_ROOT/requirements-macos.txt" \
   -r "$PROJECT_ROOT/requirements-ui.txt"
 
-echo "Setup complete. Launch with: ./scripts/launch_macos.sh"
+if [[ -f "$PROJECT_ROOT/WhisperTube.command" ]]; then
+  chmod u+x "$PROJECT_ROOT/WhisperTube.command"
+fi
+
+echo "Setup complete. Double-click WhisperTube.command in Finder, or run: ./scripts/launch_macos.sh"

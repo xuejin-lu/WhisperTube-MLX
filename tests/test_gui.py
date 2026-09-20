@@ -4,9 +4,16 @@ import tempfile
 import unittest
 from pathlib import Path
 from urllib.parse import quote
-from unittest.mock import Mock, patch
+from unittest.mock import MagicMock, Mock, patch
 
-from whispertube.gui import begin_run, build_app, execute_pipeline_request, launch_app, run_gui_request
+from whispertube.gui import (
+    begin_run,
+    build_app,
+    execute_pipeline_request,
+    find_available_port,
+    launch_app,
+    run_gui_request,
+)
 from whispertube.pipeline import CleanupError, DownloadError
 from whispertube.transcription import DependencyError, InferenceError, ModelError, OutputError
 
@@ -116,6 +123,35 @@ class GUITests(unittest.TestCase):
         self.assertEqual(result.message, "application error: unexpected local failure")
         self.assertNotIn("Traceback", result.message)
         self.assertNotIn("cookies", result.message)
+
+    def test_find_available_port_skips_busy_candidate(self) -> None:
+        busy_socket = MagicMock()
+        free_socket = MagicMock()
+        busy_socket.__enter__.return_value.bind.side_effect = OSError("address in use")
+        free_socket.__enter__.return_value.bind.return_value = None
+
+        with patch("whispertube.gui.socket.socket", side_effect=[busy_socket, free_socket]):
+            self.assertEqual(find_available_port(start=7860, attempts=2), 7861)
+
+    def test_launch_auto_selects_port_when_omitted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output_root = Path(temp_dir) / "transcripts"
+            app = Mock()
+
+            with patch("whispertube.gui.find_available_port", return_value=7861) as select_port:
+                launch_app(app, output_dir=output_root, inbrowser=False)
+
+            select_port.assert_called_once_with()
+            app.launch.assert_called_once_with(
+                server_name="127.0.0.1",
+                server_port=7861,
+                share=False,
+                inbrowser=False,
+                show_error=False,
+                enable_monitoring=False,
+                strict_cors=True,
+                footer_links=[],
+            )
 
     def test_launch_is_explicitly_local_private_and_non_telemetric(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

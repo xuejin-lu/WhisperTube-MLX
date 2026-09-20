@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import os
+import socket
 import tempfile
 from dataclasses import dataclass
 from enum import Enum
@@ -45,6 +46,25 @@ class GUIResult:
 
 DEFAULT_AUDIO_ROOT = Path(DEFAULT_AUDIO_DIR)
 DEFAULT_TRANSCRIPT_ROOT = Path(DEFAULT_OUTPUT_DIR)
+
+
+def find_available_port(start: int = DEFAULT_GUI_PORT, attempts: int = 100) -> int:
+    """Return the first free loopback TCP port at or above the starting port."""
+
+    if attempts < 1:
+        raise ValueError("attempts must be at least 1")
+    if not 1 <= start <= 65535:
+        raise ValueError("start port must be between 1 and 65535")
+
+    stop = min(65536, start + attempts)
+    for port in range(start, stop):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as candidate:
+            try:
+                candidate.bind((LOCAL_SERVER_NAME, port))
+            except OSError:
+                continue
+        return port
+    raise OSError(f"Cannot find an empty local port in range {start}-{stop - 1}")
 
 
 def begin_run() -> GUIResult:
@@ -200,7 +220,7 @@ def launch_app(
     app,
     *,
     output_dir: str | Path = DEFAULT_TRANSCRIPT_ROOT,
-    port: int = DEFAULT_GUI_PORT,
+    port: int | None = None,
     inbrowser: bool = True,
 ):
     """Launch a Blocks app with explicit local-only privacy settings."""
@@ -208,9 +228,10 @@ def launch_app(
     if os.environ.get("GRADIO_ALLOWED_PATHS"):
         raise ValueError("GRADIO_ALLOWED_PATHS must be unset for the local GUI")
     _approved_transcript_root(output_dir, create=True)
+    server_port = port if port is not None else find_available_port()
     return app.launch(
         server_name=LOCAL_SERVER_NAME,
-        server_port=port,
+        server_port=server_port,
         share=False,
         inbrowser=inbrowser,
         show_error=False,
@@ -225,7 +246,12 @@ def _build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--model", default=DEFAULT_MODEL)
     parser.add_argument("--audio-dir", default=DEFAULT_AUDIO_ROOT)
     parser.add_argument("--output-dir", default=DEFAULT_TRANSCRIPT_ROOT)
-    parser.add_argument("--port", type=int, default=DEFAULT_GUI_PORT)
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=None,
+        help="Local GUI port. If omitted, use the first free port starting at 7860.",
+    )
     parser.add_argument("--no-browser", action="store_true")
     return parser
 
