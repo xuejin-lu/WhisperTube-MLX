@@ -2,7 +2,7 @@
 
 **Feature ID**: 006-local-media-input  
 **Target**: post-v1.0 usability feature (candidate for v1.1)  
-**Status**: Ready for Spec Kit planning and implementation
+**Status**: Complete — approved
 
 ## 1. Goal
 
