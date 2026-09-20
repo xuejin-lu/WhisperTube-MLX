@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, Mock, patch
 from whispertube.gui import (
     begin_run,
     build_app,
+    execute_request,
     execute_pipeline_request,
     find_available_port,
     launch_app,
@@ -34,6 +35,123 @@ class GUITests(unittest.TestCase):
             execute_pipeline_request("  \n ", pipeline=pipeline)
 
         pipeline.assert_not_called()
+
+    def test_request_selection_dispatches_exactly_one_backend(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "lecture.wav"
+            source.write_bytes(b"local audio fixture")
+            youtube_transcript = root / "youtube.md"
+            local_transcript = root / "local.md"
+            pipeline = Mock(return_value=youtube_transcript)
+            transcriber = Mock(return_value=local_transcript)
+
+            youtube_result = execute_request(
+                "  https://youtu.be/gmj41fQTbfY  ",
+                None,
+                model="tiny-model",
+                audio_dir=root / "audio",
+                output_dir=root / "transcripts",
+                pipeline=pipeline,
+                transcriber=transcriber,
+            )
+            self.assertEqual(youtube_result, youtube_transcript)
+            pipeline.assert_called_once_with(
+                "https://youtu.be/gmj41fQTbfY",
+                model="tiny-model",
+                audio_dir=root / "audio",
+                output_dir=root / "transcripts",
+            )
+            transcriber.assert_not_called()
+
+            pipeline.reset_mock()
+            local_result = execute_request(
+                "",
+                source,
+                model="tiny-model",
+                audio_dir=root / "audio",
+                output_dir=root / "transcripts",
+                pipeline=pipeline,
+                transcriber=transcriber,
+            )
+            self.assertEqual(local_result, local_transcript)
+            pipeline.assert_not_called()
+            transcriber.assert_called_once_with(
+                source,
+                model="tiny-model",
+                output_dir=root / "transcripts",
+            )
+
+            for url, local_audio in (("", None), ("https://youtu.be/gmj41fQTbfY", source)):
+                with self.subTest(url=url, local_audio=local_audio):
+                    with self.assertRaisesRegex(ValueError, "exactly one"):
+                        execute_request(
+                            url,
+                            local_audio,
+                            pipeline=pipeline,
+                            transcriber=transcriber,
+                        )
+            pipeline.assert_not_called()
+
+    def test_local_source_remains_byte_identical_after_success_and_failures(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "lecture.wav"
+            original = b"local audio fixture that must remain unchanged"
+            source.write_bytes(original)
+            transcript = root / "transcripts" / "lecture.md"
+            transcript.parent.mkdir()
+            transcript.write_text("# Transcript\n\nlocal result\n", encoding="utf-8")
+            transcriber = Mock(return_value=transcript)
+
+            success = run_gui_request(
+                "",
+                local_audio=source,
+                output_dir=transcript.parent,
+                transcriber=transcriber,
+            )
+            self.assertEqual(success.status.value, "success")
+            self.assertEqual(source.read_bytes(), original)
+
+            for failure in (InferenceError("decode failed"), OutputError("write failed")):
+                with self.subTest(category=failure.category):
+                    result = run_gui_request(
+                        "",
+                        local_audio=source,
+                        output_dir=transcript.parent,
+                        transcriber=Mock(side_effect=failure),
+                    )
+                    self.assertEqual(result.status.value, "error")
+                    self.assertIn(f"{failure.category} error", result.message)
+                    self.assertEqual(source.read_bytes(), original)
+
+            with self.assertRaises(KeyboardInterrupt):
+                execute_request(
+                    "",
+                    source,
+                    output_dir=transcript.parent,
+                    transcriber=Mock(side_effect=KeyboardInterrupt),
+                )
+            self.assertEqual(source.read_bytes(), original)
+
+    def test_local_file_component_is_single_file_with_approved_suffixes(self) -> None:
+        app = build_app(handler=Mock(return_value=("Success", "# Transcript", "result.md", True)))
+        self.addCleanup(app.close)
+        config = app.get_config_file()
+
+        local_components = [
+            component
+            for component in config["components"]
+            if component["props"].get("label") == "Local audio"
+        ]
+        self.assertEqual(len(local_components), 1)
+        props = local_components[0]["props"]
+        self.assertEqual(props["file_count"], "single")
+        self.assertEqual(props["type"], "filepath")
+        self.assertEqual(
+            props["file_types"],
+            [".aac", ".flac", ".m4a", ".mp3", ".ogg", ".wav", ".webm"],
+        )
 
     def test_valid_request_trims_url_and_propagates_launch_configuration(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -219,9 +337,9 @@ class GUITests(unittest.TestCase):
                 app.has_launched = True
 
             with patch.object(app, "launch", side_effect=configure_test_app):
-                launch_app(app, output_dir=output_root, inbrowser=False)
+                launch_app(app, output_dir=output_root, port=9877, inbrowser=False)
 
-            result = asyncio.run(app.process_api(1, ["https://youtu.be/gmj41fQTbfY"]))
+            result = asyncio.run(app.process_api(1, ["https://youtu.be/gmj41fQTbfY", None]))
             cached_url = result["data"][2]["url"]
             route_app = App.create_app(app)
 

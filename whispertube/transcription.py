@@ -15,7 +15,7 @@ DEFAULT_MODEL = "mlx-community/whisper-large-v3-mlx"
 DEFAULT_OUTPUT_DIR = "temp/transcripts"
 DEFAULT_LANGUAGE = "zh"
 _IGNORED_RUNTIME_ROOTS = {"temp", "outputs"}
-_SUPPORTED_AUDIO_SUFFIXES = {
+SUPPORTED_AUDIO_SUFFIXES = (
     ".aac",
     ".flac",
     ".m4a",
@@ -23,7 +23,8 @@ _SUPPORTED_AUDIO_SUFFIXES = {
     ".ogg",
     ".wav",
     ".webm",
-}
+)
+_SUPPORTED_AUDIO_SUFFIXES = set(SUPPORTED_AUDIO_SUFFIXES)
 _STRONG_PARAGRAPH_BOUNDARIES = "。！？!?；;\n"
 _WEAK_PARAGRAPH_BOUNDARIES = "：:，,、"
 

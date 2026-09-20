@@ -13,7 +13,13 @@ from pathlib import Path
 from typing import Callable
 
 from whispertube.pipeline import DEFAULT_AUDIO_DIR, PipelineError, run_pipeline
-from whispertube.transcription import DEFAULT_MODEL, DEFAULT_OUTPUT_DIR, TranscriptionError
+from whispertube.transcription import (
+    DEFAULT_MODEL,
+    DEFAULT_OUTPUT_DIR,
+    SUPPORTED_AUDIO_SUFFIXES,
+    TranscriptionError,
+    transcribe_audio,
+)
 
 
 LOCAL_SERVER_NAME = "127.0.0.1"
@@ -22,6 +28,7 @@ GUI_TITLE = "WhisperTube MLX"
 _RUNTIME_ROOTS = {"temp", "outputs"}
 
 Pipeline = Callable[..., Path]
+LocalTranscriber = Callable[..., Path]
 
 
 class TranscriptResultError(Exception):
@@ -77,6 +84,40 @@ def begin_run() -> GUIResult:
     )
 
 
+def execute_request(
+    url: str | None,
+    local_audio: str | Path | None,
+    *,
+    model: str = DEFAULT_MODEL,
+    audio_dir: str | Path = DEFAULT_AUDIO_ROOT,
+    output_dir: str | Path = DEFAULT_TRANSCRIPT_ROOT,
+    pipeline: Pipeline = run_pipeline,
+    transcriber: LocalTranscriber = transcribe_audio,
+) -> Path:
+    """Validate one mutually exclusive GUI input and invoke exactly one backend."""
+
+    normalized_url = (url or "").strip()
+    normalized_local_audio = str(local_audio).strip() if local_audio is not None else ""
+    if bool(normalized_url) == bool(normalized_local_audio):
+        raise ValueError("choose exactly one input: YouTube URL or local audio")
+    if normalized_url:
+        return Path(
+            pipeline(
+                normalized_url,
+                model=model,
+                audio_dir=audio_dir,
+                output_dir=output_dir,
+            )
+        )
+    return Path(
+        transcriber(
+            Path(normalized_local_audio),
+            model=model,
+            output_dir=output_dir,
+        )
+    )
+
+
 def execute_pipeline_request(
     url: str,
     *,
@@ -85,18 +126,17 @@ def execute_pipeline_request(
     output_dir: str | Path = DEFAULT_TRANSCRIPT_ROOT,
     pipeline: Pipeline = run_pipeline,
 ) -> Path:
-    """Validate the GUI request and invoke the approved pipeline exactly once."""
+    """Validate the legacy URL-only GUI request and invoke the pipeline exactly once."""
 
-    normalized_url = url.strip()
-    if not normalized_url:
+    if not url.strip():
         raise ValueError("YouTube URL is required")
-    return Path(
-        pipeline(
-            normalized_url,
-            model=model,
-            audio_dir=audio_dir,
-            output_dir=output_dir,
-        )
+    return execute_request(
+        url,
+        None,
+        model=model,
+        audio_dir=audio_dir,
+        output_dir=output_dir,
+        pipeline=pipeline,
     )
 
 
@@ -163,19 +203,23 @@ def _begin_component_values():
 
 def _basic_terminal_values(
     url: str,
+    local_audio: str | Path | None,
     *,
     model: str,
     audio_dir: str | Path,
     output_dir: str | Path,
     pipeline: Pipeline,
+    transcriber: LocalTranscriber,
 ):
     return _component_values(
         run_gui_request(
             url,
+            local_audio=local_audio,
             model=model,
             audio_dir=audio_dir,
             output_dir=output_dir,
             pipeline=pipeline,
+            transcriber=transcriber,
         )
     )
 
@@ -183,20 +227,24 @@ def _basic_terminal_values(
 def run_gui_request(
     url: str,
     *,
+    local_audio: str | Path | None = None,
     model: str = DEFAULT_MODEL,
     audio_dir: str | Path = DEFAULT_AUDIO_ROOT,
     output_dir: str | Path = DEFAULT_TRANSCRIPT_ROOT,
     pipeline: Pipeline = run_pipeline,
+    transcriber: LocalTranscriber = transcribe_audio,
 ) -> GUIResult:
-    """Return a safe terminal GUI result for one approved pipeline invocation."""
+    """Return a safe terminal GUI result for one approved input route."""
 
     try:
-        transcript = execute_pipeline_request(
+        transcript = execute_request(
             url,
+            local_audio,
             model=model,
             audio_dir=audio_dir,
             output_dir=output_dir,
             pipeline=pipeline,
+            transcriber=transcriber,
         )
     except ValueError as exc:
         return GUIResult(GUIStatus.ERROR, f"input error: {exc}")
@@ -290,10 +338,17 @@ def build_app(
         audio_dir=audio_dir,
         output_dir=output_dir,
         pipeline=pipeline,
+        transcriber=transcribe_audio,
     )
     with gr.Blocks(title=GUI_TITLE, analytics_enabled=False, delete_cache=(3600, 3600)) as app:
         gr.Markdown("# WhisperTube MLX")
         url = gr.Textbox(label="YouTube URL", placeholder="https://www.youtube.com/watch?v=...")
+        local_audio = gr.File(
+            label="Local audio",
+            file_count="single",
+            file_types=list(SUPPORTED_AUDIO_SUFFIXES),
+            type="filepath",
+        )
         transcribe = gr.Button("Transcribe", variant="primary")
         status = gr.Textbox(label="Status", value="Idle", interactive=False)
         preview = gr.Markdown(label="Transcript preview", value="")
@@ -309,7 +364,7 @@ def build_app(
         )
         started.then(
             fn=terminal_handler,
-            inputs=[url],
+            inputs=[url, local_audio],
             outputs=[status, preview, download, transcribe],
             trigger_mode="once",
             concurrency_limit=1,

@@ -142,9 +142,15 @@ Launch the interface and open its loopback URL in the local browser:
 python3 -m whispertube.gui
 ```
 
-The UI provides one YouTube URL input, one Transcribe action, visible
-running/success/error status, a Markdown preview, and a local Markdown
-download. It reuses the v0.3 pipeline and preserves its cause-specific errors.
+The UI provides one YouTube URL input, one Local audio file picker, one
+Transcribe action, visible running/success/error status, a Markdown preview,
+and a local Markdown download. Choose exactly one input per request: either a
+YouTube URL or one local audio file. Local audio reuses the existing MLX
+transcription boundary and supports `.aac`, `.flac`, `.m4a`, `.mp3`, `.ogg`,
+`.wav`, and `.webm`. Local video files such as `.mp4`, `.mov`, and `.mkv` are
+not supported. The original local audio remains user-owned and is never
+deleted, moved, renamed, truncated, or overwritten. YouTube requests continue
+to reuse the v0.3 pipeline and preserve its cause-specific errors.
 
 The server binds explicitly to `127.0.0.1`; public sharing, framework
 analytics, monitoring, and direct queue bypass are disabled. Only validated

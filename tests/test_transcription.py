@@ -14,6 +14,7 @@ from whispertube.transcription import (
     InputError,
     ModelError,
     OutputError,
+    SUPPORTED_AUDIO_SUFFIXES,
     _load_converter,
     format_paragraphs,
     main,
@@ -22,6 +23,20 @@ from whispertube.transcription import (
 
 
 class TranscriptionTests(unittest.TestCase):
+    def test_all_approved_suffixes_are_accepted(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            for suffix in SUPPORTED_AUDIO_SUFFIXES:
+                with self.subTest(suffix=suffix):
+                    source = root / f"lecture{suffix}"
+                    source.write_bytes(b"local audio fixture")
+                    transcribe_audio(
+                        source,
+                        output_dir=root / f"transcripts-{suffix[1:]}",
+                        transcriber=Mock(return_value={"text": "你好"}),
+                        converter=lambda text: text,
+                    )
+
     def test_writes_one_utf8_traditional_markdown_artifact(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             source = Path(temp_dir) / "lecture.m4a"
@@ -112,7 +127,9 @@ class TranscriptionTests(unittest.TestCase):
             directory.mkdir()
             unsupported = Path(temp_dir) / "notes.txt"
             unsupported.write_text("not audio", encoding="utf-8")
-            for source in (directory, unsupported):
+            local_video = Path(temp_dir) / "video.mp4"
+            local_video.write_bytes(b"not supported")
+            for source in (directory, unsupported, local_video):
                 backend = Mock()
                 with self.assertRaises(InputError):
                     transcribe_audio(

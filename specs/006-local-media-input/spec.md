@@ -66,7 +66,7 @@ This feature must reuse the existing transcription implementation rather than cr
 
 ## 3. User stories
 
-### US1 — Transcribe a local audio file
+### US1 — Transcribe a local audio file (Priority: P1)
 
 As a user, I can choose one supported local audio file in the same GUI I already use for YouTube and receive a Taiwan Traditional Chinese Markdown transcript.
 
@@ -80,7 +80,7 @@ Acceptance:
 - previews the transcript,
 - and offers the exact validated Markdown artifact for download.
 
-### US2 — Preserve the original file
+### US2 — Preserve the original file (Priority: P1)
 
 As a user, my original local audio must never be treated as disposable pipeline audio.
 
@@ -89,7 +89,7 @@ Acceptance:
 - Success, transcription failure, GUI failure, cleanup, app restart, or cancellation MUST NOT delete, truncate, move, rename, or overwrite the user's original local audio file.
 - If Gradio creates its own temporary upload/cache copy, cleanup may affect only that framework-owned copy according to documented framework behavior, never the original source file.
 
-### US3 — Keep YouTube behavior unchanged
+### US3 — Keep YouTube behavior unchanged (Priority: P1)
 
 As an existing user, I can still paste one YouTube URL and use the already approved URL pipeline exactly as before.
 

@@ -317,7 +317,7 @@ No publication task remains. Future `開始` runs should synchronize and stop un
 
 ## v1.1 local-audio-input kickoff
 
-**SPEC READY — implementation not started.**
+**IMPLEMENTATION COMPLETE — review handoff pending.**
 
 The next scoped product feature is local audio input in the existing loopback GUI.
 
@@ -340,19 +340,16 @@ Hard boundaries:
 - preserve loopback-only Gradio, no public share, no broad file-serving directory, and all existing transcript validation/privacy contracts;
 - no new tag or GitHub Release during implementation.
 
+Verified implementation evidence:
+
+- Spec Kit artifacts for feature 006 are present: plan, research, data-model, quickstart, UI contract, security checklist, and tasks.
+- Agent reviewer phase completed security checklist 15/15; all requirements-quality items are traceable to the spec.
+- Focused GUI/transcription suite passes 39/39; full deterministic suite passes 80/80.
+- Real Apple Silicon local-audio route smoke with `mlx-community/whisper-tiny` produced a 34,456-byte UTF-8 Markdown result from the approved public audio fixture; the local route did not invoke the YouTube pipeline, and the source audio remained present and byte-identical.
+- Loopback GUI smoke at `127.0.0.1:17862` returned HTTP 200, showed no public share URL, and stopped cleanly.
+- Artifact inspection is clean; generated audio/transcript remain under ignored `temp/` paths.
+- Follow-up Spec Kit converge found no remaining unbuilt work; no new tag or GitHub Release was created.
+
 ## v1.1 next autonomous task
 
-On the next Codex `開始`:
-
-1. fetch/rebase to current `origin/main`;
-2. read `AGENTS.md`, `docs/STATUS.md`, and `specs/006-local-media-input/spec.md`;
-3. run the repository Spec Kit lifecycle for feature 006, including clarify/plan/checklist/tasks/analyze as appropriate;
-4. resolve generated checklist items under `docs/CHECKLIST_REVIEW_POLICY.md`;
-5. implement with TDD, preserving the existing YouTube path and all privacy/file-ownership invariants;
-6. add deterministic dispatch, ownership, suffix, output, privacy, and regression tests;
-7. perform a real Apple Silicon local-audio GUI smoke with an explicit small model and a non-sensitive untracked local audio fixture;
-8. run the full deterministic suite, `git diff --check`, `$speckit-converge`, push, and verify exact-HEAD CI;
-9. persist review evidence in `docs/STATUS.md` and Spec Kit tasks/checklists;
-10. stop and request review.
-
-Do not publish a new release or begin unrelated features.
+Complete the remaining handoff only: commit/push the converged feature, verify exact-HEAD CI, update this section with the final commit/run, and stop for repository review. Do not publish a new release or begin unrelated features.
