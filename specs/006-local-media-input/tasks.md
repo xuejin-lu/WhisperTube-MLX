@@ -91,8 +91,8 @@ description: "Implementation tasks for local audio input"
 - [x] T022 Run a real Apple Silicon local-audio GUI smoke with `mlx-community/whisper-tiny` and a non-sensitive untracked fixture; verify non-empty Markdown, unchanged source bytes, no yt-dlp acquisition, loopback-only binding, and no public share URL.
 - [x] T023 [P] Inspect tracked/reviewable artifacts with `whispertube.release.inspect_artifacts` and verify no source audio, transcript, model cache, credential, cookie, or absolute local path is included.
 - [x] T024 Run `$speckit-converge` for feature 006, append and implement any remaining traceable tasks, then rerun focused/full tests until converged.
-- [ ] T025 Update `docs/STATUS.md` with feature 006 evidence, exact commit/CI state, unresolved risks, and the explicit no-new-release boundary.
-- [ ] T026 Commit and push the converged feature, verify exact-HEAD deterministic CI, and stop for repository review.
+- [x] T025 Update `docs/STATUS.md` with feature 006 evidence, exact commit/CI state, unresolved risks, and the explicit no-new-release boundary.
+- [x] T026 Commit and push the converged feature, verify exact-HEAD deterministic CI, and stop for repository review.
 
 ## Dependencies & Execution Order
 
