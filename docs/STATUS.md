@@ -387,3 +387,49 @@ No implementation blocker or Human Gate remains for feature 006.
 Local audio input is approved on `main` and is ready for local use after synchronizing the repository.
 
 No publication action is authorized by this approval. Creating a `v1.1.0` tag/GitHub Release, if desired, is a separate release decision.
+
+
+## 007 downloader-only pivot kickoff
+
+**SPEC READY — implementation not started.**
+
+The product direction is intentionally simplified.
+
+New mainline definition:
+
+`YouTube video/playlist URL -> local best-audio download -> manual Colab upload`
+
+Feature specification:
+
+- `specs/007-downloader-only-pivot/spec.md`
+- `specs/007-downloader-only-pivot/contracts/downloader.md`
+
+Hard boundaries:
+
+- the repository is no longer primarily a transcription application;
+- do not add or maintain a web GUI as the normal workflow;
+- do not run Whisper, MLX, OpenCC, or Gradio in the normal workflow;
+- do not integrate Colab or automatic upload;
+- support explicit single-video URLs and explicit playlist URLs;
+- a watch URL containing `list=` remains single-video unless the URL is explicitly a playlist URL;
+- save best available audio without MP3 re-encoding;
+- normal output root is `~/Downloads/WhisperTube/`;
+- playlist downloads preserve numeric order in filenames and should continue past individual unavailable entries where yt-dlp supports it;
+- retain `v1.0.0` as historical release evidence rather than rewriting history.
+
+## 007 next autonomous task
+
+On the next Codex `開始`:
+
+1. synchronize to current `origin/main`;
+2. read `AGENTS.md`, this status, and `specs/007-downloader-only-pivot/spec.md`;
+3. run the Spec Kit lifecycle for feature 007;
+4. aggressively reduce active product complexity;
+5. implement a downloader-only normal workflow with `DownloadAudio.command`;
+6. add deterministic video/playlist URL, yt-dlp command, output naming, launcher, cookie-option, and no-transcription regression tests;
+7. perform real single-video and small-playlist smoke tests;
+8. rewrite README around the downloader-only product;
+9. run full tests, `git diff --check`, `$speckit-converge`, push, and verify exact-HEAD CI;
+10. stop for repository review.
+
+Do not publish a new tag/release and do not begin Colab/transcription integration.
